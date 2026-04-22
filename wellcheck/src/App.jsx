@@ -54,6 +54,7 @@ const DOMAINS = [
   { id:"general",      icon:"💊", label:{en:"General Health",   tl:"Pangkalahatang Kalusugan", es:"Salud General",      ja:"一般的な健康",   zh:"综合健康",    fr:"Santé Générale"   }, color:"#2d7a52" },
   { id:"mental",       icon:"🧠", label:{en:"Mental Health",    tl:"Kalusugang Pangkaisipan",  es:"Salud Mental",       ja:"メンタルヘルス", zh:"心理健康",    fr:"Santé Mentale"    }, color:"#6366f1" },
   { id:"lifestyle",    icon:"🏃", label:{en:"Lifestyle",        tl:"Pamumuhay",                es:"Estilo de Vida",     ja:"ライフスタイル", zh:"生活方式",    fr:"Mode de Vie"      }, color:"#0891b2" },
+  { id:"dietary",      icon:"🥗", label:{en:"Dietary Health",   tl:"Kalusugan sa Pagkain",     es:"Salud Alimentaria",  ja:"食事の健康",     zh:"饮食健康",    fr:"Santé Alimentaire"}, color:"#16a34a" },
   { id:"occupational", icon:"💼", label:{en:"Occupational",     tl:"Kalusugan sa Trabaho",     es:"Salud Ocupacional",  ja:"職業的健康",     zh:"职业健康",    fr:"Santé au Travail" }, color:"#d97706" },
   { id:"financial",    icon:"💰", label:{en:"Financial Health", tl:"Pinansyal na Kalusugan",   es:"Salud Financiera",   ja:"財務的健康",     zh:"财务健康",    fr:"Santé Financière" }, color:"#059669" },
 ];
@@ -93,6 +94,17 @@ const SAT5 = {
 };
 
 const QUESTIONS = {
+  personal:[
+    {id:"p1",type:"text",  key:"name",   q:{en:"Welcome! What is your first name?",tl:"Maligayang pagdating! Ano ang iyong pangalan?",es:"¡Bienvenido! ¿Cuál es tu nombre?",ja:"ようこそ！お名前を教えてください",zh:"欢迎！您的名字是什么？",fr:"Bienvenue! Quel est votre prénom?"}},
+    {id:"p2",type:"number",key:"age",    q:{en:"How old are you?",tl:"Ilang taon ka na?",es:"¿Cuántos años tienes?",ja:"年齢を教えてください",zh:"您多大了？",fr:"Quel âge avez-vous?"},placeholder:{en:"e.g. 35",tl:"hal. 35",es:"ej. 35",ja:"例：35",zh:"例：35",fr:"ex. 35"}},
+    {id:"p3",type:"number",key:"weight", q:{en:"What is your weight? (lbs)",tl:"Ano ang iyong timbang? (lbs)",es:"¿Cuál es tu peso? (lbs)",ja:"体重（ポンド）を教えてください",zh:"您的体重是多少？（磅）",fr:"Quel est votre poids? (lbs)"},placeholder:{en:"e.g. 160",tl:"hal. 160",es:"ej. 160",ja:"例：160",zh:"例：160",fr:"ex. 160"}},
+    {id:"p4",type:"choice",key:"gender", q:{en:"What is your biological sex?",tl:"Ano ang iyong biyolohikal na kasarian?",es:"¿Cuál es tu sexo biológico?",ja:"生物学的性別は？",zh:"您的生理性别是？",fr:"Quel est votre sexe biologique?"},
+      options:{en:["Male","Female","Intersex","Prefer not to say"],tl:["Lalaki","Babae","Intersex","Mas gusto na huwag sabihin"],es:["Masculino","Femenino","Intersexual","Prefiero no decirlo"],ja:["男性","女性","インターセックス","答えたくない"],zh:["男性","女性","双性人","不想透露"],fr:["Masculin","Féminin","Intersexe","Préfère ne pas répondre"]},risk:[0,0,0,0]},
+    {id:"p5",type:"choice",key:"ethnicity",q:{en:"What is your ethnicity? (optional)",tl:"Ano ang iyong etnisidad? (opsyonal)",es:"¿Cuál es tu etnia? (opcional)",ja:"民族性は？（任意）",zh:"您的族裔是什么？（可选）",fr:"Quelle est votre ethnicité? (optionnel)"},
+      options:{en:["Asian / Pacific Islander","Black / African American","Hispanic / Latino","White / Caucasian","Multiracial","Other / Prefer not to say"],tl:["Asyano / Kapuluan ng Pasipiko","Itim / Aprikano-Amerikano","Hispanic / Latino","Puti / Caucasian","Multiracial","Iba pa / Mas gusto na huwag sabihin"],es:["Asiático / Isleño del Pacífico","Negro / Afroamericano","Hispano / Latino","Blanco / Caucásico","Multirracial","Otro / Prefiero no decirlo"],ja:["アジア人/太平洋諸島出身","黒人/アフリカ系アメリカ人","ヒスパニック/ラテン系","白人/コーカサス人","多民族","その他/答えたくない"],zh:["亚裔/太平洋岛民","黑人/非裔美国人","西班牙裔/拉丁裔","白人/高加索人","多种族","其他/不想透露"],fr:["Asiatique / Insulaire du Pacifique","Noir / Afro-Américain","Hispanique / Latino","Blanc / Caucasien","Multiracial","Autre / Préfère ne pas répondre"]},risk:[0,0,0,0,0,0]},
+    {id:"p6",type:"choice",key:"employment",q:{en:"What best describes your employment status?",tl:"Ano ang pinaka-angkop na paglalarawan sa iyong katayuan sa trabaho?",es:"¿Qué describe mejor tu situación laboral?",ja:"雇用状況は？",zh:"您的就业状况如何？",fr:"Quelle est votre situation professionnelle?"},
+      options:{en:["Full-time employed","Part-time employed","Self-employed / Freelance","Student","On leave / Between jobs","Retired"],tl:["Buong oras na trabaho","Bahagyang trabaho","Sariling negosyo / Freelance","Estudyante","Bakasyon / Walang trabaho","Retirado"],es:["Empleado tiempo completo","Empleado medio tiempo","Autónomo / Freelance","Estudiante","En descanso / Sin trabajo","Jubilado"],ja:["フルタイム雇用","パートタイム雇用","自営業/フリーランス","学生","休職中/無職","退職"],zh:["全职受雇","兼职受雇","自雇/自由职业","学生","休假中/在职间隔","退休"],fr:["Employé à temps plein","Employé à temps partiel","Travailleur indépendant","Étudiant","En congé / Entre deux emplois","Retraité"]},risk:[0,0,0,0,0,0]},
+  ],
   general:[
     {id:"g1",type:"text",  key:"name",   q:{en:"What is your first name?",tl:"Ano ang iyong pangalan?",es:"¿Cuál es tu nombre?",ja:"お名前を教えてください",zh:"您的名字是什么？",fr:"Quel est votre prénom?"}},
     {id:"g2",type:"number",key:"age",    q:{en:"How old are you?",tl:"Ilang taon ka na?",es:"¿Cuántos años tienes?",ja:"年齢を教えてください",zh:"您多大了？",fr:"Quel âge avez-vous?"},placeholder:{en:"e.g. 35",tl:"hal. 35",es:"ej. 35",ja:"例：35",zh:"例：35",fr:"ex. 35"}},
@@ -198,6 +210,32 @@ const QUESTIONS = {
     {id:"f10",type:"choice",key:"fgoals",    q:{en:"Do you have clear financial goals for the next 1–5 years?",tl:"Mayroon ka bang malinaw na mga layunin sa pananalapi para sa susunod na 1–5 taon?",es:"¿Tienes metas financieras claras para los próximos 1–5 años?",ja:"今後1〜5年の明確な財務目標はありますか？",zh:"您是否有未来1-5年的明确财务目标？",fr:"Avez-vous des objectifs financiers clairs pour les 1–5 prochaines années?"},
       options:{en:["Yes, clear goals and a plan","Yes, goals but no plan","Vague goals","Thinking about it","No financial goals"],tl:["Oo, malinaw na mga layunin at plano","Oo, mga layunin pero walang plano","Malabong mga layunin","Nag-iisip pa","Walang mga layunin"],es:["Sí, metas y plan","Sí, metas sin plan","Metas vagas","Lo estoy pensando","Sin metas"],ja:["はい、明確な目標と計画","はい、目標はあるが計画なし","漠然とした目標","考え中","財務目標なし"],zh:["是的，明确目标和计划","是的，有目标但没计划","模糊的目标","还在考虑","没有财务目标"],fr:["Oui, objectifs et plan clairs","Oui, objectifs sans plan","Objectifs vagues","J'y réfléchis","Aucun objectif"]},risk:[0,0,1,1,2]},
   ],
+  dietary:[
+    {id:"d1",type:"choice",key:"meals",      q:{en:"How many balanced meals do you eat per day?",tl:"Ilang balanseng pagkain ang iyong kinakain sa isang araw?",es:"¿Cuántas comidas equilibradas comes al día?",ja:"1日に何回バランスの取れた食事をしていますか？",zh:"您每天吃几顿均衡的饭？",fr:"Combien de repas équilibrés mangez-vous par jour?"},
+      options:{en:["3 meals + healthy snacks","3 regular meals","2 meals","1 meal","Irregular — skip meals often"],tl:["3 pagkain + malusog na meryenda","3 regular na pagkain","2 pagkain","1 pagkain","Hindi regular — madalas preskong kumain"],es:["3 comidas + snacks saludables","3 comidas regulares","2 comidas","1 comida","Irregular — salto comidas a menudo"],ja:["3食＋ヘルシースナック","3食定期的","2食","1食","不規則——よく食事を抜く"],zh:["3餐+健康零食","3餐规律","2餐","1餐","不规律——经常跳过餐食"],fr:["3 repas + collations saines","3 repas réguliers","2 repas","1 repas","Irrégulier — saute souvent des repas"]},risk:[0,0,1,2,2]},
+    {id:"d2",type:"choice",key:"vegetables", q:{en:"How many servings of fruits and vegetables do you eat daily?",tl:"Ilang servings ng prutas at gulay ang iyong kinakain araw-araw?",es:"¿Cuántas porciones de frutas y verduras comes diariamente?",ja:"1日に何サービングの果物と野菜を食べていますか？",zh:"您每天吃几份水果和蔬菜？",fr:"Combien de portions de fruits et légumes mangez-vous quotidiennement?"},
+      options:{en:["5+ servings","3–4 servings","2–3 servings","1 serving","Rarely eat fruits/vegetables"],tl:["5+ servings","3–4 servings","2–3 servings","1 serving","Bihirang kumain ng prutas/gulay"],es:["5+ porciones","3–4 porciones","2–3 porciones","1 porción","Raramente como frutas/verduras"],ja:["5サービング以上","3〜4サービング","2〜3サービング","1サービング","ほとんど食べない"],zh:["5份以上","3-4份","2-3份","1份","很少吃水果/蔬菜"],fr:["5+ portions","3–4 portions","2–3 portions","1 portion","Mange rarement des fruits/légumes"]},risk:[0,0,1,1,2]},
+    {id:"d3",type:"choice",key:"protein",    q:{en:"How adequate is your daily protein intake?",tl:"Gaano kasapat ang iyong pang-araw-araw na pagkuha ng protina?",es:"¿Qué tan adecuada es tu ingesta diaria de proteínas?",ja:"毎日のタンパク質摂取量は十分ですか？",zh:"您每天的蛋白质摄入量是否充足？",fr:"Votre apport quotidien en protéines est-il adéquat?"},
+      options:{en:["Very adequate — meet daily goals","Mostly adequate","Somewhat adequate","Often inadequate","Very inadequate"],tl:["Napaka-sapat","Karaniwang sapat","Medyo sapat","Madalas hindi sapat","Napaka-hindi sapat"],es:["Muy adecuada","Mayormente adecuada","Algo adecuada","A menudo inadecuada","Muy inadecuada"],ja:["非常に十分","ほぼ十分","ある程度十分","しばしば不十分","非常に不十分"],zh:["非常充足","大多充足","有些充足","经常不足","非常不足"],fr:["Très adéquat","Principalement adéquat","Assez adéquat","Souvent inadéquat","Très inadéquat"]},risk:[0,0,1,1,2]},
+    {id:"d4",type:"choice",key:"processed",  q:{en:"How often do you consume processed or ultra-processed foods?",tl:"Gaano kadalas kang kumain ng processed o ultra-processed na pagkain?",es:"¿Con qué frecuencia consumes alimentos procesados o ultraprocesados?",ja:"加工食品や超加工食品をどのくらいの頻度で食べていますか？",zh:"您多久吃一次加工食品或超加工食品？",fr:"À quelle fréquence consommez-vous des aliments transformés ou ultra-transformés?"},
+      options:{en:["Rarely — mostly whole foods","1–2 times per week","3–4 times per week","Daily","Multiple times daily"],tl:["Bihira — karaniwang buong pagkain","1–2 beses bawat linggo","3–4 beses bawat linggo","Araw-araw","Maraming beses sa isang araw"],es:["Raramente","1–2 veces/semana","3–4 veces/semana","Diariamente","Varias veces al día"],ja:["ほとんどない","週1〜2回","週3〜4回","毎日","1日複数回"],zh:["很少——主要吃天然食物","每周1-2次","每周3-4次","每天","每天多次"],fr:["Rarement","1–2 fois/semaine","3–4 fois/semaine","Quotidiennement","Plusieurs fois par jour"]},risk:[0,0,1,2,2]},
+    {id:"d5",type:"choice",key:"sugar",      q:{en:"How would you describe your daily sugar and refined carb intake?",tl:"Paano mo ilalarawan ang iyong pang-araw-araw na paggamit ng asukal at pinong karbohidrat?",es:"¿Cómo describirías tu consumo diario de azúcar y carbohidratos refinados?",ja:"毎日の砂糖と精製炭水化物の摂取量はいかがですか？",zh:"您如何描述您每天的糖和精制碳水化合物摄入量？",fr:"Comment décririez-vous votre consommation quotidienne de sucre et de glucides raffinés?"},
+      options:{en:["Very low — minimal sweets/refined carbs","Low","Moderate","High — daily sweets, white bread, soda","Very high — constant cravings"],tl:["Napakababa","Mababa","Katamtaman","Mataas — araw-araw na matamis","Napakataas"],es:["Muy bajo","Bajo","Moderado","Alto","Muy alto"],ja:["非常に低い","低い","中程度","高い","非常に高い"],zh:["非常低","低","中等","高——每天甜食/精制主食","非常高"],fr:["Très faible","Faible","Modéré","Élevé","Très élevé"]},risk:[0,0,1,2,2]},
+    {id:"d6",type:"choice",key:"diettype",   q:{en:"Which best describes your diet pattern?",tl:"Alin ang pinakamaiangkop na paglalarawan sa iyong pattern ng pagkain?",es:"¿Cuál describe mejor tu patrón de dieta?",ja:"食事のパターンを最もよく表しているのはどれですか？",zh:"哪个最能描述您的饮食模式？",fr:"Lequel décrit le mieux votre régime alimentaire?"},
+      options:{en:["Omnivore — eat everything","Flexitarian — mostly plant-based","Vegetarian","Vegan","Specific medical diet (diabetic, low-sodium, etc.)"],tl:["Omnivore — kumakain ng lahat","Flexitarian","Vegetarian","Vegan","Espesyal na medikal na diyeta"],es:["Omnívoro","Flexitariano","Vegetariano","Vegano","Dieta médica específica"],ja:["雑食","フレキシタリアン","ベジタリアン","ビーガン","特定の医療食"],zh:["杂食——什么都吃","弹性素食主义","素食者","纯素食者","特定医疗饮食"],fr:["Omnivore","Flexitarien","Végétarien","Végétalien","Régime médical spécifique"]},risk:[0,0,0,0,0]},
+    {id:"d7",type:"choice",key:"mealprep",   q:{en:"How often do you cook or prepare your own meals at home?",tl:"Gaano kadalas kang nagluluto o naghahanda ng iyong sariling pagkain sa bahay?",es:"¿Con qué frecuencia cocinas o preparas tus propias comidas en casa?",ja:"自宅で料理や食事の準備をどのくらいの頻度でしていますか？",zh:"您多久在家自己做饭或准备餐食？",fr:"À quelle fréquence cuisinez-vous ou préparez-vous vos propres repas à la maison?"},
+      options:{en:["Almost always","Most of the time","About half the time","Rarely — mostly eat out","Almost never — always eat out/takeout"],tl:["Halos palagi","Karaniwang oras","Humigit-kumulang kalahati ng oras","Bihira","Halos hindi kailanman"],es:["Casi siempre","La mayoría del tiempo","Aproximadamente la mitad","Raramente","Casi nunca"],ja:["ほぼ常に","ほとんどの場合","約半分","ほとんどしない","ほぼ外食"],zh:["几乎总是","大多数时候","大约一半时间","很少——主要外出就餐","几乎从不——总是外出/外卖"],fr:["Presque toujours","La plupart du temps","Environ la moitié","Rarement","Presque jamais"]},risk:[0,0,1,2,2]},
+    {id:"d8",type:"choice",key:"foodsec",    q:{en:"Do you have consistent access to healthy, nutritious food?",tl:"Mayroon ka bang tuluy-tuloy na access sa malusog at masustansyang pagkain?",es:"¿Tienes acceso consistente a alimentos saludables y nutritivos?",ja:"健康的で栄養価の高い食事に常にアクセスできていますか？",zh:"您是否能持续获得健康、营养丰富的食物？",fr:"Avez-vous un accès constant à des aliments sains et nutritifs?"},
+      options:{en:["Yes, always","Usually yes","Sometimes","Rarely","No — food insecurity is a concern"],tl:["Oo, lagi","Karaniwang oo","Minsan","Bihira","Hindi — food insecurity ang alalahanin"],es:["Sí, siempre","Generalmente","A veces","Raramente","No — inseguridad alimentaria"],ja:["はい、常に","大抵はい","時々","ほとんどない","いいえ — 食料不安がある"],zh:["是的，总是","通常是","有时","很少","没有——食品安全是个问题"],fr:["Oui, toujours","Généralement","Parfois","Rarement","Non — insécurité alimentaire"]},risk:[0,0,1,2,2]},
+    {id:"d9",type:"choice",key:"supplements",q:{en:"Do you take vitamins or dietary supplements regularly?",tl:"Umiinom ka ba ng mga bitamina o dietary supplements nang regular?",es:"¿Tomas vitaminas o suplementos dietéticos regularmente?",ja:"定期的にビタミンやサプリメントを摂取していますか？",zh:"您是否定期服用维生素或膳食补充剂？",fr:"Prenez-vous des vitamines ou des compléments alimentaires régulièrement?"},
+      options:{en:["Yes, prescribed by a doctor","Yes, self-prescribed","Occasionally","No, but considering it","No, not needed"],tl:["Oo, inireresetang ng doktor","Oo, sariling iniresetang","Paminsan-minsan","Hindi, pero isinasaalang-alang","Hindi, hindi kailangan"],es:["Sí, recetados por médico","Sí, autoprescritos","Ocasionalmente","No, pero lo considero","No, no es necesario"],ja:["はい、医師処方","はい、自己処方","時々","いいえ、検討中","いいえ、不要"],zh:["是的，医生开具","是的，自行服用","偶尔","没有，但在考虑","没有，不需要"],fr:["Oui, prescrits par médecin","Oui, auto-prescrits","Occasionnellement","Non, mais j'y pense","Non, pas nécessaire"]},risk:[0,0,0,1,0]},
+    {id:"d10",type:"choice",key:"eating_habits",q:{en:"Do you notice any disordered eating patterns (skipping meals, binge eating, emotional eating)?",tl:"Napapansin mo ba ang anumang hindi maayos na gawi sa pagkain?",es:"¿Notas algún patrón alimentario desordenado (saltarte comidas, comer en exceso, comer emocionalmente)?",ja:"食事の乱れ（食事を抜く、過食、感情的な食事）に気づきますか？",zh:"您是否注意到任何饮食紊乱模式（跳餐、暴食、情绪化进食）？",fr:"Remarquez-vous des habitudes alimentaires désordonnées (sauter des repas, excès alimentaires, manger émotionnellement)?"},
+      options:{en:["No, my eating habits are healthy","Occasionally skip meals","Sometimes overeat when stressed","Regularly eat emotionally or binge","Yes, significantly impacts my life"],tl:["Hindi, malusog ang aking gawi sa pagkain","Paminsan-minsan preskong kumain","Minsan sobrang kain kapag stressed","Regular na emosyonal na kumain","Oo, malaki ang epekto sa aking buhay"],es:["No, mis hábitos son saludables","Ocasionalmente salteo comidas","A veces como en exceso cuando estresado","Regularmente como emocionalmente","Sí, impacta significativamente mi vida"],ja:["いいえ、食習慣は健康的","時々食事を抜く","ストレス時に過食することがある","定期的に感情的な食事をする","はい、生活に大きく影響している"],zh:["没有，我的饮食习惯健康","偶尔跳过餐食","压力时有时暴食","经常情绪化进食或暴食","是的，严重影响我的生活"],fr:["Non, mes habitudes sont saines","Je saute occasionnellement des repas","Je mange parfois trop sous stress","Je mange régulièrement émotionnellement","Oui, impacte significativement ma vie"]},risk:[0,0,1,2,2]},
+    {id:"d11",type:"choice",key:"hydration",  q:{en:"How much water do you drink daily?",tl:"Gaano karaming tubig ang iyong iniinom araw-araw?",es:"¿Cuánta agua bebes diariamente?",ja:"1日にどのくらい水を飲みますか？",zh:"您每天喝多少水？",fr:"Quelle quantité d'eau buvez-vous quotidiennement?"},
+      options:{en:["8+ glasses","6–8 glasses","4–6 glasses","2–4 glasses","Less than 2 glasses"],tl:["8+ baso","6–8 baso","4–6 baso","2–4 baso","Wala pang 2 baso"],es:["8+ vasos","6–8 vasos","4–6 vasos","2–4 vasos","Menos de 2 vasos"],ja:["8杯以上","6〜8杯","4〜6杯","2〜4杯","2杯未満"],zh:["8杯以上","6-8杯","4-6杯","2-4杯","不到2杯"],fr:["8+ verres","6–8 verres","4–6 verres","2–4 verres","Moins de 2 verres"]},risk:[0,0,1,1,2]},
+    {id:"d12",type:"choice",key:"dietgoal",   q:{en:"Do you have a specific dietary health goal?",tl:"Mayroon ka bang tiyak na layunin sa kalusugang pang-pagkain?",es:"¿Tienes un objetivo específico de salud alimentaria?",ja:"特定の食事の健康目標はありますか？",zh:"您有具体的饮食健康目标吗？",fr:"Avez-vous un objectif spécifique de santé alimentaire?"},
+      options:{en:["Weight management","Improve energy levels","Manage a health condition (diabetes, heart disease)","Build muscle / athletic performance","General healthy eating","No specific goal"],tl:["Pamamahala ng timbang","Pagpapabuti ng antas ng enerhiya","Pamamahala ng kondisyong pangkalusugan","Pagbuo ng kalamnan","Pangkalahatang malusog na pagkain","Walang tiyak na layunin"],es:["Control de peso","Mejorar niveles de energía","Manejar una condición (diabetes, cardiopatía)","Músculo / rendimiento atlético","Alimentación saludable general","Sin objetivo específico"],ja:["体重管理","エネルギーレベルの向上","健康状態の管理","筋肉づくり/運動パフォーマンス","一般的な健康的な食事","特定の目標なし"],zh:["体重管理","提高能量水平","管理健康状况（糖尿病、心脏病）","增肌/运动表现","一般健康饮食","没有具体目标"],fr:["Gestion du poids","Améliorer les niveaux d'énergie","Gérer une condition (diabète, maladies cardiaques)","Musculation / performance athlétique","Alimentation saine générale","Pas d'objectif spécifique"]},risk:[0,0,0,0,0,0]},
+  ],
 };
 
 const RISK_LABELS = {
@@ -216,7 +254,8 @@ const UI_TEXT = {
 };
 
 function calcRisk(answers, domainId) {
-  const qs = QUESTIONS[domainId].filter(q => q.type === "choice");
+  if (!QUESTIONS[domainId]) return 0;
+  const qs = QUESTIONS[domainId].filter(q => q.type === "choice" && q.risk && q.risk.some(r => r > 0));
   if (!qs.length) return 0;
   const total = qs.reduce((sum, q) => {
     const idx = (q.options?.en || []).indexOf(answers[q.key] || "");
@@ -235,7 +274,6 @@ export default function WellCheck() {
   const [answers, setAnswers] = useState({});
   const [textInput, setTextInput] = useState("");
   const [selected, setSelected] = useState(null);
-  const [visible, setVisible] = useState(true);
 
   const ui = UI_TEXT[lang];
 
@@ -244,8 +282,11 @@ export default function WellCheck() {
   );
 
   const startQuiz = () => {
-    const qs = selectedDomains.flatMap(d => QUESTIONS[d]);
-    setAllQuestions(qs); setQIndex(0); setAnswers({});
+    // Always prepend personal info questions
+    const personalQs = QUESTIONS.personal;
+    const domainQs = selectedDomains.flatMap(d => QUESTIONS[d]);
+    setAllQuestions([...personalQs, ...domainQs]);
+    setQIndex(0); setAnswers({});
     setSelected(null); setTextInput(""); setPhase("quiz");
   };
 
@@ -256,26 +297,23 @@ export default function WellCheck() {
   const advance = (val) => {
     const newAnswers = { ...answers, [currentQ.key]: val };
     setAnswers(newAnswers);
-    setVisible(false);
-    setTimeout(() => {
-      if (isLast) { setPhase("summary"); }
-      else { setQIndex(i => i + 1); setSelected(null); setTextInput(""); setVisible(true); }
-    }, 220);
+    if (isLast) { setPhase("summary"); }
+    else { setQIndex(i => i + 1); setSelected(null); setTextInput(""); }
   };
 
   const goBack = () => {
     if (qIndex === 0) { setPhase("domains"); return; }
-    setVisible(false);
-    setTimeout(() => { setQIndex(i => i - 1); setSelected(null); setTextInput(""); setVisible(true); }, 220);
+    setQIndex(i => i - 1); setSelected(null); setTextInput("");
   };
 
-  const domainRisks = selectedDomains.map(id => ({ domain: id, risk: calcRisk(answers, id) }));
+  const domainRisks = phase === "summary" ? selectedDomains.map(id => ({ domain: id, risk: calcRisk(answers, id) })) : [];
   const name = answers.name || "";
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(145deg,#e8f5e9 0%,#f0faf4 50%,#e3f4ea 100%)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif", padding:20 }}>
       <style>{`
         @keyframes fadeIn { from{opacity:0}to{opacity:1} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
         .fade-in { animation: fadeIn 0.4s ease forwards; }
         .opt-btn:hover { transform: translateX(4px); }
         .opt-btn { transition: all 0.15s ease; cursor: pointer; }
@@ -356,7 +394,7 @@ export default function WellCheck() {
 
       {/* QUIZ */}
       {phase === "quiz" && currentQ && (
-        <div style={{ width:"100%", maxWidth:580 }}>
+        <div key={qIndex} style={{ width:"100%", maxWidth:580 }}>
           <div style={{ marginBottom:16 }}>
             <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#7aab8a", marginBottom:6 }}>
               <span>{qIndex + 1} / {allQuestions.length}</span>
@@ -367,7 +405,7 @@ export default function WellCheck() {
             </div>
           </div>
 
-          <div style={{ transition:"opacity 0.2s ease, transform 0.2s ease", opacity:visible?1:0, transform:visible?"translateY(0)":"translateY(12px)", background:"#fff", borderRadius:20, padding:32, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"1px solid rgba(45,122,82,0.1)" }}>
+          <div style={{ animation:"slideUp 0.25s ease forwards", background:"#fff", borderRadius:20, padding:32, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"1px solid rgba(45,122,82,0.1)" }}>
             {(() => { const dom = DOMAINS.find(d => QUESTIONS[d.id]?.some(q => q.id === currentQ.id)); return dom ? (
               <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${dom.color}12`, border:`1px solid ${dom.color}33`, borderRadius:20, padding:"3px 12px", marginBottom:16, fontSize:12, color:dom.color, fontWeight:600 }}>
                 {dom.icon} {dom.label[lang]}
@@ -396,7 +434,7 @@ export default function WellCheck() {
                   const enOpt = currentQ.options.en[i];
                   const isSel = selected === enOpt;
                   return (
-                    <div key={i} className="opt-btn" onClick={() => { setSelected(enOpt); setTimeout(() => advance(enOpt), 180); }}
+                    <div key={i} className="opt-btn" onClick={() => { setSelected(enOpt); advance(enOpt); }}
                       style={{ padding:"13px 18px", borderRadius:12, border:isSel?"2px solid #2d7a52":"1.5px solid rgba(45,122,82,0.18)", background:isSel?"linear-gradient(135deg,#2d7a52,#52c27a)":"#f7fbf8", color:isSel?"#fff":"#2d5c3e", fontSize:14, fontWeight:isSel?600:400, display:"flex", alignItems:"center", gap:12, boxShadow:isSel?"0 4px 14px rgba(45,122,82,0.25)":"0 1px 4px rgba(45,122,82,0.06)" }}>
                       <span style={{ width:22, height:22, borderRadius:"50%", border:isSel?"2px solid rgba(255,255,255,0.6)":"2px solid #c8e0ce", background:isSel?"rgba(255,255,255,0.25)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:12, fontWeight:700, color:isSel?"#fff":"#7aab8a" }}>
                         {String.fromCharCode(65 + i)}
@@ -423,12 +461,18 @@ export default function WellCheck() {
             <div style={{ textAlign:"center", marginBottom:24 }}>
               <div style={{ fontSize:40, marginBottom:8 }}>📋</div>
               <h2 style={{ margin:0, fontSize:22, color:"#1a4d32", fontWeight:700 }}>{ui.summary}</h2>
-              {name && <p style={{ margin:"6px 0 0", color:"#6a9c7a", fontSize:14 }}>Hi {name}! Here's your wellness snapshot.</p>}
+              {name && <p style={{ margin:"6px 0 0", color:"#6a9c7a", fontSize:15 }}>Hi <strong>{name}</strong>! Here's your wellness snapshot.</p>}
             </div>
-            {(answers.age || answers.weight) && (
-              <div style={{ display:"flex", gap:10, marginBottom:20, justifyContent:"center", flexWrap:"wrap" }}>
-                {answers.age && <div style={{ padding:"8px 16px", background:"#f0faf4", borderRadius:20, fontSize:13, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.15)" }}>🎂 {answers.age}</div>}
-                {answers.weight && <div style={{ padding:"8px 16px", background:"#f0faf4", borderRadius:20, fontSize:13, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.15)" }}>⚖️ {answers.weight} lbs</div>}
+            {(answers.age || answers.weight || answers.gender || answers.ethnicity || answers.employment) && (
+              <div style={{ marginBottom:20, padding:"14px 18px", background:"#f7fbf8", borderRadius:14, border:"1px solid rgba(45,122,82,0.12)" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#7aab8a", marginBottom:10, textTransform:"uppercase", letterSpacing:"0.08em" }}>👤 Personal Profile</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+                  {answers.age && <span style={{ padding:"5px 12px", background:"#fff", borderRadius:20, fontSize:12, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.2)" }}>🎂 Age: {answers.age}</span>}
+                  {answers.weight && <span style={{ padding:"5px 12px", background:"#fff", borderRadius:20, fontSize:12, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.2)" }}>⚖️ {answers.weight} lbs</span>}
+                  {answers.gender && <span style={{ padding:"5px 12px", background:"#fff", borderRadius:20, fontSize:12, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.2)" }}>🧬 {answers.gender}</span>}
+                  {answers.ethnicity && <span style={{ padding:"5px 12px", background:"#fff", borderRadius:20, fontSize:12, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.2)" }}>🌍 {answers.ethnicity}</span>}
+                  {answers.employment && <span style={{ padding:"5px 12px", background:"#fff", borderRadius:20, fontSize:12, color:"#2d5c3e", border:"1px solid rgba(45,122,82,0.2)" }}>💼 {answers.employment}</span>}
+                </div>
               </div>
             )}
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>

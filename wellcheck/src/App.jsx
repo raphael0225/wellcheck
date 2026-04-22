@@ -192,7 +192,7 @@ Reply with ONLY a raw JSON object, no markdown, no code fences, no extra text:
     const res=await fetch("/api/chat",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-3-haiku-20240307",max_tokens:1200,messages:[{role:"user",content:prompt}]})
+        body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:1200,messages:[{role:"user",content:prompt}]})
       });
       if(!res.ok){const t=await res.text();throw new Error(res.status+": "+t);}
       const data=await res.json();

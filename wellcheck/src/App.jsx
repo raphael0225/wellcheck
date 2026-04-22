@@ -189,9 +189,14 @@ Question: ${question}
 Reply with ONLY a raw JSON object, no markdown, no code fences, no extra text:
 {"greeting":"Hi [name or friend]!","summary":"2-3 sentence answer","highlights":["point 1","point 2","point 3"],"recommendations":[{"title":"Action 1","detail":"specific advice"},{"title":"Action 2","detail":"specific advice"},{"title":"Action 3","detail":"specific advice"}],"resources":["tip or resource 1","tip or resource 2","tip or resource 3"],"disclaimer":"Wellness information only, not medical advice. Please consult a healthcare provider for medical concerns."}`;
     try {
-      const res=await fetch("/api/chat",{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
-        headers:{"Content-Type":"application/json"},
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_KEY || "",
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true"
+        },
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})
       });
       const data=await res.json();

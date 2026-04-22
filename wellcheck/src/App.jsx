@@ -236,12 +236,12 @@ const RISK_LABELS = {
 };
 
 const UI_TEXT = {
-  en:{welcome:"Your confidential health check-in",next:"Next →",back:"← Back",submit:"See My Results",restart:"Start Over",selectLang:"Choose your language",selectDomains:"What would you like to assess today?",selectDomainsDesc:"Choose one or more areas. Your responses are completely confidential.",selectAll:"Select All",begin:"Begin",summary:"Your Wellness Report",disclaimer:"WellCheck is a wellness support tool, not a medical service. Crisis support: call or text 988."},
-  tl:{welcome:"Ang iyong kumpidensyal na pagsusuri sa kalusugan",next:"Susunod →",back:"← Bumalik",submit:"Tingnan ang Aking Mga Resulta",restart:"Magsimula Muli",selectLang:"Pumili ng wika",selectDomains:"Ano ang nais mong suriin ngayon?",selectDomainsDesc:"Pumili ng isa o higit pang mga lugar. Ang iyong mga sagot ay ganap na kumpidensyal.",selectAll:"Piliin Lahat",begin:"Magsimula",summary:"Iyong Ulat sa Kalusugan",disclaimer:"Ang WellCheck ay isang tool sa suporta sa kalusugan. Krisis: tumawag o mag-text sa 988."},
-  es:{welcome:"Tu chequeo de salud confidencial",next:"Siguiente →",back:"← Atrás",submit:"Ver Mis Resultados",restart:"Comenzar de Nuevo",selectLang:"Elige tu idioma",selectDomains:"¿Qué te gustaría evaluar hoy?",selectDomainsDesc:"Elige una o más áreas. Tus respuestas son completamente confidenciales.",selectAll:"Seleccionar Todo",begin:"Comenzar",summary:"Tu Informe de Bienestar",disclaimer:"WellCheck es una herramienta de apoyo, no un servicio médico. Crisis: llama o envía texto al 988."},
-  ja:{welcome:"あなたの機密健康チェックイン",next:"次へ →",back:"← 戻る",submit:"結果を見る",restart:"最初からやり直す",selectLang:"言語を選択",selectDomains:"今日は何を評価しますか？",selectDomainsDesc:"1つ以上のエリアを選択してください。回答は完全に機密です。",selectAll:"すべて選択",begin:"開始",summary:"あなたのウェルネスレポート",disclaimer:"WellCheckはウェルネスサポートツールです。危機の場合：988に電話またはテキスト。"},
-  zh:{welcome:"您的保密健康检查",next:"下一步 →",back:"← 返回",submit:"查看我的结果",restart:"重新开始",selectLang:"选择您的语言",selectDomains:"您今天想评估什么？",selectDomainsDesc:"选择一个或多个区域。您的回答完全保密。",selectAll:"全选",begin:"开始",summary:"您的健康报告",disclaimer:"WellCheck是健康支持工具，不是医疗服务。危机支持：拨打或发短信至988。"},
-  fr:{welcome:"Votre bilan de santé confidentiel",next:"Suivant →",back:"← Retour",submit:"Voir Mes Résultats",restart:"Recommencer",selectLang:"Choisissez votre langue",selectDomains:"Que souhaitez-vous évaluer aujourd'hui?",selectDomainsDesc:"Choisissez un ou plusieurs domaines. Vos réponses sont entièrement confidentielles.",selectAll:"Tout Sélectionner",begin:"Commencer",summary:"Votre Rapport de Bien-être",disclaimer:"WellCheck est un outil de soutien, pas un service médical. Crise: appelez ou textez le 988."},
+  en:{welcome:"Your confidential health check-in",next:"Next →",back:"← Back",submit:"See My Results",restart:"Start Over",selectLang:"Choose your language",selectDomains:"What would you like to assess today?",selectDomainsDesc:"Choose one or more areas. Your responses are completely confidential.",selectAll:"Select All",begin:"Begin",summary:"Your Wellness Report",disclaimer:"WellCheck is a wellness support tool, not a medical service. Crisis support: call or text 988.",quickAskTitle:"Just have a health question?",quickAskDesc:"Skip the full assessment and ask anything across all health domains. Get an instant personalized report.",quickAskPlaceholder:"e.g. How can I improve my sleep and reduce stress? or What should I focus on for better nutrition?",quickAskBtn:"✨ Get My Personalized Report"},
+  tl:{welcome:"Ang iyong kumpidensyal na pagsusuri sa kalusugan",next:"Susunod →",back:"← Bumalik",submit:"Tingnan ang Aking Mga Resulta",restart:"Magsimula Muli",selectLang:"Pumili ng wika",selectDomains:"Ano ang nais mong suriin ngayon?",selectDomainsDesc:"Pumili ng isa o higit pang mga lugar. Ang iyong mga sagot ay ganap na kumpidensyal.",selectAll:"Piliin Lahat",begin:"Magsimula",summary:"Iyong Ulat sa Kalusugan",disclaimer:"Ang WellCheck ay isang tool sa suporta sa kalusugan. Krisis: tumawag o mag-text sa 988.",quickAskTitle:"Mayroon ka lang na tanong sa kalusugan?",quickAskDesc:"Laktawan ang buong pagtatasa at magtanong sa lahat ng larangan ng kalusugan.",quickAskPlaceholder:"hal. Paano ko mapapabuti ang aking tulog at mabawasan ang stress?",quickAskBtn:"✨ Makuha ang Aking Personalisadong Ulat"},
+  es:{welcome:"Tu chequeo de salud confidencial",next:"Siguiente →",back:"← Atrás",submit:"Ver Mis Resultados",restart:"Comenzar de Nuevo",selectLang:"Elige tu idioma",selectDomains:"¿Qué te gustaría evaluar hoy?",selectDomainsDesc:"Elige una o más áreas. Tus respuestas son completamente confidenciales.",selectAll:"Seleccionar Todo",begin:"Comenzar",summary:"Tu Informe de Bienestar",disclaimer:"WellCheck es una herramienta de apoyo, no un servicio médico. Crisis: llama o envía texto al 988.",quickAskTitle:"¿Solo tienes una pregunta de salud?",quickAskDesc:"Omite la evaluación completa y pregunta sobre cualquier área de salud.",quickAskPlaceholder:"ej. ¿Cómo puedo mejorar mi sueño y reducir el estrés?",quickAskBtn:"✨ Obtener Mi Informe Personalizado"},
+  ja:{welcome:"あなたの機密健康チェックイン",next:"次へ →",back:"← 戻る",submit:"結果を見る",restart:"最初からやり直す",selectLang:"言語を選択",selectDomains:"今日は何を評価しますか？",selectDomainsDesc:"1つ以上のエリアを選択してください。回答は完全に機密です。",selectAll:"すべて選択",begin:"開始",summary:"あなたのウェルネスレポート",disclaimer:"WellCheckはウェルネスサポートツールです。危機の場合：988に電話またはテキスト。",quickAskTitle:"健康に関する質問だけありますか？",quickAskDesc:"フル評価をスキップして、すべての健康領域について質問できます。",quickAskPlaceholder:"例：睡眠を改善してストレスを減らすにはどうすればいいですか？",quickAskBtn:"✨ 個別レポートを取得"},
+  zh:{welcome:"您的保密健康检查",next:"下一步 →",back:"← 返回",submit:"查看我的结果",restart:"重新开始",selectLang:"选择您的语言",selectDomains:"您今天想评估什么？",selectDomainsDesc:"选择一个或多个区域。您的回答完全保密。",selectAll:"全选",begin:"开始",summary:"您的健康报告",disclaimer:"WellCheck是健康支持工具，不是医疗服务。危机支持：拨打或发短信至988。",quickAskTitle:"只有一个健康问题？",quickAskDesc:"跳过完整评估，就任何健康领域提问，获取即时个性化报告。",quickAskPlaceholder:"例：我如何改善睡眠和减轻压力？",quickAskBtn:"✨ 获取我的个性化报告"},
+  fr:{welcome:"Votre bilan de santé confidentiel",next:"Suivant →",back:"← Retour",submit:"Voir Mes Résultats",restart:"Recommencer",selectLang:"Choisissez votre langue",selectDomains:"Que souhaitez-vous évaluer aujourd'hui?",selectDomainsDesc:"Choisissez un ou plusieurs domaines. Vos réponses sont entièrement confidentielles.",selectAll:"Tout Sélectionner",begin:"Commencer",summary:"Votre Rapport de Bien-être",disclaimer:"WellCheck est un outil de soutien, pas un service médical. Crise: appelez ou textez le 988.",quickAskTitle:"Vous avez juste une question de santé?",quickAskDesc:"Sautez l'évaluation complète et posez n'importe quelle question sur tous les domaines de santé.",quickAskPlaceholder:"ex. Comment améliorer mon sommeil et réduire le stress?",quickAskBtn:"✨ Obtenir Mon Rapport Personnalisé"},
 };
 
 function calcRisk(answers, domainId) {
@@ -265,6 +265,11 @@ export default function WellCheck() {
   const [answers, setAnswers] = useState({});
   const [textInput, setTextInput] = useState("");
   const [selected, setSelected] = useState(null);
+  const [qaInput, setQaInput] = useState("");
+  const [qaLoading, setQaLoading] = useState(false);
+  const [qaReport, setQaReport] = useState(null);
+  const [qaError, setQaError] = useState("");
+  const [askOnlyInput, setAskOnlyInput] = useState("");
 
   const ui = UI_TEXT[lang];
 
@@ -281,6 +286,15 @@ export default function WellCheck() {
     setSelected(null); setTextInput(""); setPhase("quiz");
   };
 
+  const startAskOnly = () => {
+    // Skip quiz — go straight to Q&A with all domains available
+    setSelectedDomains(DOMAINS.map(d => d.id));
+    setQaInput(askOnlyInput);
+    setQaReport(null);
+    setQaError("");
+    setPhase("summary");
+  };
+
   const currentQ = allQuestions[qIndex];
   const isLast = qIndex === allQuestions.length - 1;
   const progress = allQuestions.length ? (qIndex / allQuestions.length) * 100 : 0;
@@ -295,6 +309,79 @@ export default function WellCheck() {
   const goBack = () => {
     if (qIndex === 0) { setPhase("domains"); return; }
     setQIndex(i => i - 1); setSelected(null); setTextInput("");
+  };
+
+  const ALLOWED_DOMAINS_TEXT = selectedDomains.map(id => DOMAINS.find(d => d.id === id)?.label?.en).filter(Boolean).join(", ");
+
+  const submitQuestion = async () => {
+    if (!qaInput.trim() || qaLoading) return;
+    setQaLoading(true);
+    setQaError("");
+    setQaReport(null);
+
+    const hasAssessment = Object.keys(answers).length > 0;
+    const profileSummary = hasAssessment ? [
+      answers.name && `Name: ${answers.name}`,
+      answers.age && `Age: ${answers.age}`,
+      answers.weight && `Weight: ${answers.weight} lbs`,
+      answers.gender && `Biological sex: ${answers.gender}`,
+      answers.ethnicity && `Ethnicity: ${answers.ethnicity}`,
+      answers.employment && `Employment: ${answers.employment}`,
+    ].filter(Boolean).join(" | ") : "No profile provided — answer generally";
+
+    const riskSummary = hasAssessment && domainRisks.length > 0
+      ? domainRisks.map(({ domain, risk }) => {
+          const dom = DOMAINS.find(d => d.id === domain);
+          const level = ["Low Risk", "Moderate", "High Risk"][risk];
+          return `${dom?.label?.en}: ${level}`;
+        }).join(" | ")
+      : "No assessment completed — provide general evidence-based guidance across all health domains";
+
+    const systemPrompt = `You are WellCheck AI, a professional and compassionate workplace health advisor.
+The employee has completed a wellness assessment. Their profile and results are below.
+You ONLY answer questions related to these health domains: ${ALLOWED_DOMAINS_TEXT}.
+If a question is outside these domains or not health-related, politely decline and redirect.
+
+EMPLOYEE PROFILE: ${profileSummary}
+ASSESSMENT RESULTS: ${riskSummary}
+
+RESPONSE FORMAT — always respond with a valid JSON object (no markdown, no backticks) with this exact structure:
+{
+  "isHealthRelated": true or false,
+  "outOfScope": true or false,
+  "greeting": "Personalized greeting using their name",
+  "summary": "2-3 sentence personalized summary of their question in context of their results",
+  "highlights": ["3-5 key highlight points as strings"],
+  "recommendations": [
+    {"title": "Recommendation title", "detail": "Specific actionable advice"},
+    {"title": "Recommendation title", "detail": "Specific actionable advice"},
+    {"title": "Recommendation title", "detail": "Specific actionable advice"}
+  ],
+  "resources": ["Resource 1", "Resource 2", "Resource 3"],
+  "disclaimer": "Brief professional disclaimer",
+  "declineMessage": "Only if outOfScope or not health related — polite decline message"
+}`;
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: [{ role: "user", content: qaInput.trim() }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content?.map(b => b.text || "").join("") || "";
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      setQaReport(parsed);
+    } catch {
+      setQaError("Something went wrong. Please try again.");
+    }
+    setQaLoading(false);
   };
 
   const domainRisks = phase === "summary" ? selectedDomains.map(id => ({ domain: id, risk: calcRisk(answers, id) })) : [];
@@ -315,6 +402,12 @@ export default function WellCheck() {
         textarea:focus, input:focus { outline: none; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: rgba(45,122,82,0.2); border-radius: 2px; }
+        @media print {
+          body * { visibility: hidden; }
+          #wellcheck-report, #wellcheck-report * { visibility: visible; }
+          #wellcheck-report { position: absolute; left: 0; top: 0; width: 100%; padding: 32px; box-shadow: none !important; border: none !important; border-radius: 0 !important; }
+          button { display: none !important; }
+        }
       `}</style>
 
       {/* LOGO */}
@@ -351,6 +444,37 @@ export default function WellCheck() {
       {/* DOMAIN SELECTION */}
       {phase === "domains" && (
         <div style={{ width:"100%", maxWidth:560, animation:"fadeIn 0.4s ease" }}>
+
+          {/* ── QUICK QUESTION BOX ── */}
+          <div style={{ background:"#fff", borderRadius:20, padding:24, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"2px solid rgba(45,122,82,0.2)", marginBottom:14 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
+              <div style={{ width:34, height:34, borderRadius:10, background:"linear-gradient(135deg,#2d7a52,#52c27a)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>💬</div>
+              <div>
+                <div style={{ fontSize:15, fontWeight:700, color:"#1a4d32" }}>{ui.quickAskTitle}</div>
+                <div style={{ fontSize:12, color:"#7aab8a", marginTop:1 }}>{ui.quickAskDesc}</div>
+              </div>
+            </div>
+            <textarea
+              value={askOnlyInput}
+              onChange={e => setAskOnlyInput(e.target.value)}
+              placeholder={ui.quickAskPlaceholder}
+              rows={3}
+              style={{ width:"100%", marginTop:12, padding:"12px 14px", borderRadius:12, border:"1.5px solid rgba(45,122,82,0.2)", fontSize:13, color:"#1a4d32", background:"#f7fbf8", fontFamily:"inherit", lineHeight:1.5, boxSizing:"border-box", resize:"vertical" }}
+            />
+            <button onClick={startAskOnly} disabled={!askOnlyInput.trim()}
+              style={{ width:"100%", marginTop:10, padding:"11px", borderRadius:12, border:"none", background:askOnlyInput.trim() ? "linear-gradient(135deg,#2d7a52,#52c27a)" : "#d8eadc", color:askOnlyInput.trim() ? "#fff" : "#9dc0a8", fontSize:13, fontWeight:700, cursor:askOnlyInput.trim() ? "pointer" : "not-allowed", fontFamily:"inherit", transition:"all 0.2s", boxShadow:askOnlyInput.trim() ? "0 4px 14px rgba(45,122,82,0.3)" : "none" }}>
+              {ui.quickAskBtn}
+            </button>
+          </div>
+
+          {/* ── DIVIDER ── */}
+          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
+            <div style={{ flex:1, height:1, background:"rgba(45,122,82,0.12)" }} />
+            <span style={{ fontSize:12, color:"#9dc0a8", fontWeight:600, whiteSpace:"nowrap" }}>— OR TAKE THE FULL ASSESSMENT —</span>
+            <div style={{ flex:1, height:1, background:"rgba(45,122,82,0.12)" }} />
+          </div>
+
+          {/* ── FULL ASSESSMENT ── */}
           <div style={{ background:"#fff", borderRadius:20, padding:28, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"1px solid rgba(45,122,82,0.1)" }}>
             <h2 style={{ margin:"0 0 6px", fontSize:18, color:"#1a4d32", fontWeight:700 }}>{ui.selectDomains}</h2>
             <p style={{ margin:"0 0 18px", fontSize:13, color:"#6a9c7a", lineHeight:1.5 }}>{ui.selectDomainsDesc}</p>
@@ -453,6 +577,7 @@ export default function WellCheck() {
               <div style={{ fontSize:40, marginBottom:8 }}>📋</div>
               <h2 style={{ margin:0, fontSize:22, color:"#1a4d32", fontWeight:700 }}>{ui.summary}</h2>
               {name && <p style={{ margin:"6px 0 0", color:"#6a9c7a", fontSize:15 }}>Hi <strong>{name}</strong>! Here's your wellness snapshot.</p>}
+              {!name && Object.keys(answers).length === 0 && <p style={{ margin:"6px 0 0", color:"#6a9c7a", fontSize:14 }}>Your personalized health report is ready below.</p>}
             </div>
             {(answers.age || answers.weight || answers.gender || answers.ethnicity || answers.employment) && (
               <div style={{ marginBottom:20, padding:"14px 18px", background:"#f7fbf8", borderRadius:14, border:"1px solid rgba(45,122,82,0.12)" }}>
@@ -466,6 +591,7 @@ export default function WellCheck() {
                 </div>
               </div>
             )}
+            {domainRisks.length > 0 && Object.keys(answers).length > 0 && (
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {domainRisks.map(({ domain, risk }) => {
                 const dom = DOMAINS.find(d => d.id === domain);
@@ -484,7 +610,8 @@ export default function WellCheck() {
                 );
               })}
             </div>
-            {(() => {
+            )}
+            {domainRisks.length > 0 && Object.keys(answers).length > 0 && (() => {
               const avg = domainRisks.reduce((s, d) => s + d.risk, 0) / domainRisks.length;
               const overall = avg < 0.5 ? 0 : avg < 1.2 ? 1 : 2;
               const rl = RISK_LABELS[overall];
@@ -496,18 +623,140 @@ export default function WellCheck() {
                 </div>
               );
             })()}
-            {domainRisks.some(d => d.risk === 2) && (
+            {domainRisks.length > 0 && Object.keys(answers).length > 0 && domainRisks.some(d => d.risk === 2) && (
               <div style={{ marginTop:16, padding:"14px 18px", borderRadius:12, background:"#fff7ed", border:"1.5px solid #f59e0b44" }}>
                 <p style={{ margin:0, fontSize:13, color:"#92400e", lineHeight:1.6 }}>
                   ⚠️ <strong>One or more areas flagged for follow-up.</strong> We recommend speaking with HR or your Employee Assistance Program (EAP). Crisis support: call or text <strong>988</strong>.
                 </p>
               </div>
             )}
-            <button onClick={() => { setPhase("lang"); setAnswers({}); setSelectedDomains([]); }}
+            <button onClick={() => { setPhase("lang"); setAnswers({}); setSelectedDomains([]); setQaReport(null); setQaInput(""); setAskOnlyInput(""); }}
               style={{ width:"100%", marginTop:20, padding:13, borderRadius:12, border:"1.5px solid rgba(45,122,82,0.25)", background:"transparent", color:"#2d7a52", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>
               {ui.restart}
             </button>
           </div>
+
+          {/* ── Q&A SECTION ── */}
+          <div style={{ background:"#fff", borderRadius:20, padding:28, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"1px solid rgba(45,122,82,0.1)", marginTop:16 }}>
+            <div style={{ marginBottom:16 }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:16, color:"#1a4d32", fontWeight:700 }}>💬 Ask a Health Question</h3>
+              <p style={{ margin:0, fontSize:12, color:"#7aab8a", lineHeight:1.5 }}>
+                Ask anything related to your assessed areas: <em>{selectedDomains.map(id => DOMAINS.find(d => d.id === id)?.label?.en).join(", ")}</em>. Get a personalized, printable report.
+              </p>
+            </div>
+            <textarea
+              value={qaInput}
+              onChange={e => setQaInput(e.target.value)}
+              placeholder="e.g. What should I focus on most to improve my mental health? or How can I improve my sleep based on my results?"
+              rows={3}
+              style={{ width:"100%", padding:"12px 14px", borderRadius:12, border:"1.5px solid rgba(45,122,82,0.2)", fontSize:14, color:"#1a4d32", background:"#f7fbf8", fontFamily:"inherit", lineHeight:1.5, boxSizing:"border-box", resize:"vertical" }}
+            />
+            {qaError && <p style={{ color:"#dc2626", fontSize:12, margin:"6px 0 0" }}>{qaError}</p>}
+            <button onClick={submitQuestion} disabled={!qaInput.trim() || qaLoading}
+              style={{ width:"100%", marginTop:10, padding:"12px", borderRadius:12, border:"none", background:qaInput.trim() && !qaLoading ? "linear-gradient(135deg,#2d7a52,#52c27a)" : "#d8eadc", color:qaInput.trim() && !qaLoading ? "#fff" : "#9dc0a8", fontSize:14, fontWeight:700, cursor:qaInput.trim() && !qaLoading ? "pointer" : "not-allowed", fontFamily:"inherit", transition:"all 0.2s" }}>
+              {qaLoading ? "Generating your personalized report..." : "✨ Generate Personalized Report"}
+            </button>
+          </div>
+
+          {/* ── PRINTABLE REPORT ── */}
+          {qaReport && (
+            <div id="wellcheck-report" style={{ background:"#fff", borderRadius:20, padding:32, boxShadow:"0 8px 32px rgba(45,122,82,0.12)", border:"2px solid rgba(45,122,82,0.2)", marginTop:16, animation:"fadeIn 0.5s ease" }}>
+              {qaReport.outOfScope || !qaReport.isHealthRelated ? (
+                <div style={{ textAlign:"center", padding:"20px 0" }}>
+                  <div style={{ fontSize:32, marginBottom:12 }}>🚫</div>
+                  <p style={{ color:"#6a9c7a", fontSize:14, lineHeight:1.6 }}>{qaReport.declineMessage}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Report Header */}
+                  <div style={{ borderBottom:"2px solid #e8f5e9", paddingBottom:16, marginBottom:20 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
+                      <div style={{ width:40, height:40, borderRadius:10, background:"linear-gradient(135deg,#2d7a52,#52c27a)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>🩺</div>
+                      <div>
+                        <div style={{ fontSize:18, fontWeight:800, color:"#1a4d32" }}>WellCheck Personalized Health Report</div>
+                        <div style={{ fontSize:11, color:"#7aab8a" }}>{new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" })}</div>
+                      </div>
+                    </div>
+                    <div style={{ background:"#f7fbf8", borderRadius:10, padding:"10px 14px", fontSize:13, color:"#2d5c3e", fontStyle:"italic", lineHeight:1.6 }}>
+                      {qaReport.greeting}
+                    </div>
+                  </div>
+
+                  {/* Your Question */}
+                  <div style={{ marginBottom:20 }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#7aab8a", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:6 }}>📝 Your Question</div>
+                    <div style={{ background:"#f0faf4", borderRadius:10, padding:"10px 14px", fontSize:13, color:"#1a4d32", lineHeight:1.6, borderLeft:"3px solid #2d7a52" }}>{qaInput}</div>
+                  </div>
+
+                  {/* Summary */}
+                  <div style={{ marginBottom:20 }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#7aab8a", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>📊 Personalized Summary</div>
+                    <p style={{ margin:0, fontSize:14, color:"#2d5c3e", lineHeight:1.7 }}>{qaReport.summary}</p>
+                  </div>
+
+                  {/* Highlights */}
+                  {qaReport.highlights?.length > 0 && (
+                    <div style={{ marginBottom:20 }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:"#7aab8a", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>✨ Key Highlights</div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                        {qaReport.highlights.map((h, i) => (
+                          <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"10px 14px", background:"#f0faf4", borderRadius:10, border:"1px solid rgba(45,122,82,0.15)" }}>
+                            <span style={{ color:"#2d7a52", fontWeight:800, fontSize:14, flexShrink:0 }}>★</span>
+                            <span style={{ fontSize:13, color:"#2d5c3e", lineHeight:1.6 }}>{h}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommendations */}
+                  {qaReport.recommendations?.length > 0 && (
+                    <div style={{ marginBottom:20 }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:"#7aab8a", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>🎯 Personalized Recommendations</div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                        {qaReport.recommendations.map((r, i) => (
+                          <div key={i} style={{ padding:"14px 16px", background:"#fff", borderRadius:12, border:"1.5px solid rgba(45,122,82,0.15)", boxShadow:"0 2px 8px rgba(45,122,82,0.06)" }}>
+                            <div style={{ fontSize:13, fontWeight:700, color:"#1a4d32", marginBottom:4 }}>
+                              <span style={{ display:"inline-block", width:22, height:22, borderRadius:"50%", background:"linear-gradient(135deg,#2d7a52,#52c27a)", color:"#fff", fontSize:11, fontWeight:800, textAlign:"center", lineHeight:"22px", marginRight:8 }}>{i+1}</span>
+                              {r.title}
+                            </div>
+                            <div style={{ fontSize:13, color:"#4a7c5e", lineHeight:1.6, paddingLeft:30 }}>{r.detail}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Resources */}
+                  {qaReport.resources?.length > 0 && (
+                    <div style={{ marginBottom:20 }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:"#7aab8a", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>📚 Resources & Next Steps</div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                        {qaReport.resources.map((r, i) => (
+                          <div key={i} style={{ display:"flex", gap:8, alignItems:"flex-start", fontSize:13, color:"#2d5c3e", lineHeight:1.6 }}>
+                            <span style={{ color:"#2d7a52", flexShrink:0 }}>→</span>
+                            {r}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Disclaimer */}
+                  <div style={{ padding:"10px 14px", background:"#f7fbf8", borderRadius:10, fontSize:11, color:"#7aab8a", lineHeight:1.6, borderTop:"1px solid rgba(45,122,82,0.1)", marginBottom:16 }}>
+                    ⚕️ {qaReport.disclaimer || "This report is for wellness support only and does not constitute medical advice. Please consult a qualified healthcare provider for medical concerns."}
+                  </div>
+
+                  {/* Print Button */}
+                  <button onClick={() => window.print()}
+                    style={{ width:"100%", padding:"13px", borderRadius:12, border:"none", background:"linear-gradient(135deg,#2d7a52,#52c27a)", color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                    🖨️ Print This Report
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
           <p style={{ textAlign:"center", fontSize:11, color:"#9dc0a8", marginTop:14, lineHeight:1.6 }}>{ui.disclaimer}</p>
         </div>
       )}

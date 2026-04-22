@@ -295,6 +295,18 @@ export default function WellCheck() {
     setPhase("summary");
   };
 
+  const startAskOnly = () => {
+    const q = askOnlyInput.trim();
+    if (!q) return;
+    setSelectedDomains(DOMAINS.map(d => d.id));
+    setQaInput(q);
+    setQaReport(null);
+    setQaError("");
+    setPhase("summary");
+    // Auto-submit immediately with the question value directly
+    runQuestion(q, DOMAINS.map(d => d.id), {});
+  };
+
   const currentQ = allQuestions[qIndex];
   const isLast = qIndex === allQuestions.length - 1;
   const progress = allQuestions.length ? (qIndex / allQuestions.length) * 100 : 0;
@@ -311,56 +323,41 @@ export default function WellCheck() {
     setQIndex(i => i - 1); setSelected(null); setTextInput("");
   };
 
-  const ALLOWED_DOMAINS_TEXT = selectedDomains.map(id => DOMAINS.find(d => d.id === id)?.label?.en).filter(Boolean).join(", ");
-
-  const submitQuestion = async () => {
-    if (!qaInput.trim() || qaLoading) return;
+  const runQuestion = async (question, domainIds, answerData) => {
+    if (!question.trim() || qaLoading) return;
     setQaLoading(true);
     setQaError("");
     setQaReport(null);
 
-    const hasAssessment = Object.keys(answers).length > 0;
-    const profileSummary = hasAssessment ? [
-      answers.name && `Name: ${answers.name}`,
-      answers.age && `Age: ${answers.age}`,
-      answers.weight && `Weight: ${answers.weight} lbs`,
-      answers.gender && `Biological sex: ${answers.gender}`,
-      answers.ethnicity && `Ethnicity: ${answers.ethnicity}`,
-      answers.employment && `Employment: ${answers.employment}`,
-    ].filter(Boolean).join(" | ") : "No profile provided — answer generally";
+    const allowedDomains = domainIds.map(id => DOMAINS.find(d => d.id === id)?.label?.en).filter(Boolean).join(", ");
+    const hasAssessment = Object.keys(answerData).length > 0;
 
-    const riskSummary = hasAssessment && domainRisks.length > 0
-      ? domainRisks.map(({ domain, risk }) => {
-          const dom = DOMAINS.find(d => d.id === domain);
-          const level = ["Low Risk", "Moderate", "High Risk"][risk];
-          return `${dom?.label?.en}: ${level}`;
+    const profileSummary = hasAssessment ? [
+      answerData.name && `Name: ${answerData.name}`,
+      answerData.age && `Age: ${answerData.age}`,
+      answerData.weight && `Weight: ${answerData.weight} lbs`,
+      answerData.gender && `Biological sex: ${answerData.gender}`,
+      answerData.ethnicity && `Ethnicity: ${answerData.ethnicity}`,
+      answerData.employment && `Employment: ${answerData.employment}`,
+    ].filter(Boolean).join(" | ") : "No profile provided — respond generally";
+
+    const riskSummary = hasAssessment && domainIds.length > 0
+      ? domainIds.map(id => {
+          const dom = DOMAINS.find(d => d.id === id);
+          const risk = calcRisk(answerData, id);
+          return `${dom?.label?.en}: ${["Low Risk","Moderate","High Risk"][risk]}`;
         }).join(" | ")
-      : "No assessment completed — provide general evidence-based guidance across all health domains";
+      : "No assessment completed — provide general evidence-based guidance";
 
     const systemPrompt = `You are WellCheck AI, a professional and compassionate workplace health advisor.
-The employee has completed a wellness assessment. Their profile and results are below.
-You ONLY answer questions related to these health domains: ${ALLOWED_DOMAINS_TEXT}.
-If a question is outside these domains or not health-related, politely decline and redirect.
+You ONLY answer questions related to these health domains: ${allowedDomains}.
+If a question is clearly outside health topics, set outOfScope to true.
 
 EMPLOYEE PROFILE: ${profileSummary}
 ASSESSMENT RESULTS: ${riskSummary}
 
-RESPONSE FORMAT — always respond with a valid JSON object (no markdown, no backticks) with this exact structure:
-{
-  "isHealthRelated": true or false,
-  "outOfScope": true or false,
-  "greeting": "Personalized greeting using their name",
-  "summary": "2-3 sentence personalized summary of their question in context of their results",
-  "highlights": ["3-5 key highlight points as strings"],
-  "recommendations": [
-    {"title": "Recommendation title", "detail": "Specific actionable advice"},
-    {"title": "Recommendation title", "detail": "Specific actionable advice"},
-    {"title": "Recommendation title", "detail": "Specific actionable advice"}
-  ],
-  "resources": ["Resource 1", "Resource 2", "Resource 3"],
-  "disclaimer": "Brief professional disclaimer",
-  "declineMessage": "Only if outOfScope or not health related — polite decline message"
-}`;
+Respond ONLY with a valid JSON object, no markdown, no backticks, no extra text:
+{"isHealthRelated":true,"outOfScope":false,"greeting":"string","summary":"string","highlights":["string","string","string"],"recommendations":[{"title":"string","detail":"string"},{"title":"string","detail":"string"},{"title":"string","detail":"string"}],"resources":["string","string","string"],"disclaimer":"string","declineMessage":""}`;
 
     try {
       const response = await fetch("/api/chat", {
@@ -368,9 +365,9 @@ RESPONSE FORMAT — always respond with a valid JSON object (no markdown, no bac
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
+          max_tokens: 1200,
           system: systemPrompt,
-          messages: [{ role: "user", content: qaInput.trim() }]
+          messages: [{ role: "user", content: question.trim() }]
         })
       });
       const data = await response.json();
@@ -379,9 +376,16 @@ RESPONSE FORMAT — always respond with a valid JSON object (no markdown, no bac
       const parsed = JSON.parse(clean);
       setQaReport(parsed);
     } catch {
-      setQaError("Something went wrong. Please try again.");
+      setQaError("Something went wrong generating your report. Please try again.");
     }
     setQaLoading(false);
+  };
+
+  const ALLOWED_DOMAINS_TEXT = selectedDomains.map(id => DOMAINS.find(d => d.id === id)?.label?.en).filter(Boolean).join(", ");
+
+  const submitQuestion = async () => {
+    if (!qaInput.trim() || qaLoading) return;
+    await runQuestion(qaInput, selectedDomains, answers);
   };
 
   const domainRisks = phase === "summary" ? selectedDomains.map(id => ({ domain: id, risk: calcRisk(answers, id) })) : [];

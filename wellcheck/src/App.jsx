@@ -360,30 +360,20 @@ Respond ONLY with a valid JSON object, no markdown, no backticks, no extra text:
 {"isHealthRelated":true,"outOfScope":false,"greeting":"string","summary":"string","highlights":["string","string","string"],"recommendations":[{"title":"string","detail":"string"},{"title":"string","detail":"string"},{"title":"string","detail":"string"}],"resources":["string","string","string"],"disclaimer":"string","declineMessage":""}`;
 
     try {
-      // Use window.claude if available (artifact preview), otherwise use /api/chat (Vercel)
-      let text = "";
-      if (typeof window !== "undefined" && window.claude) {
-        const result = await window.claude.complete({
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1200,
           system: systemPrompt,
           messages: [{ role: "user", content: question.trim() }]
-        });
-        text = result?.content?.map(b => b.text || "").join("") || result || "";
-      } else {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 1200,
-            system: systemPrompt,
-            messages: [{ role: "user", content: question.trim() }]
-          })
-        });
-        const data = await response.json();
-        text = data.content?.map(b => b.text || "").join("") || "";
-      }
+        })
+      });
+      const data = await response.json();
+      const text = data.content?.map(b => b.text || "").join("") || "";
       const clean = text.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
       setQaReport(parsed);

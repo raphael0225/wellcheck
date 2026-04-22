@@ -212,7 +212,7 @@ export default function WellCheck() {
   const [answers, setAnswers] = useState({});
   const [textInput, setTextInput] = useState("");
   const [selected, setSelected] = useState(null);
-  const [animDir, setAnimDir] = useState("in");
+  const [visible, setVisible] = useState(true);
 
   const ui = UI_TEXT[lang];
 
@@ -234,20 +234,22 @@ export default function WellCheck() {
   const isLast = qIndex === allQuestions.length - 1;
   const progress = allQuestions.length ? ((qIndex) / allQuestions.length) * 100 : 0;
 
+  const [visible, setVisible] = useState(true);
+
   const advance = (val) => {
     const newAnswers = { ...answers, [currentQ.key]: val };
     setAnswers(newAnswers);
-    setAnimDir("out");
+    setVisible(false);
     setTimeout(() => {
       if (isLast) { setPhase("summary"); }
-      else { setQIndex(i => i + 1); setSelected(null); setTextInput(""); setAnimDir("in"); }
-    }, 200);
+      else { setQIndex(i => i + 1); setSelected(null); setTextInput(""); setVisible(true); }
+    }, 220);
   };
 
   const goBack = () => {
     if (qIndex === 0) { setPhase("domains"); return; }
-    setAnimDir("out");
-    setTimeout(() => { setQIndex(i => i - 1); setSelected(null); setTextInput(""); setAnimDir("in"); }, 200);
+    setVisible(false);
+    setTimeout(() => { setQIndex(i => i - 1); setSelected(null); setTextInput(""); setVisible(true); }, 220);
   };
 
   const domainRisks = selectedDomains.map(id => ({ domain: id, risk: calcRisk(answers, id) }));
@@ -353,8 +355,7 @@ export default function WellCheck() {
             </div>
           </div>
 
-          <div className={animDir === "in" ? "slide-in" : "slide-out"}
-            style={{ background: "#fff", borderRadius: 20, padding: 32, boxShadow: "0 8px 32px rgba(45,122,82,0.12)", border: "1px solid rgba(45,122,82,0.1)" }}>
+          <div style={{ transition: "opacity 0.2s ease, transform 0.2s ease", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(12px)", background: "#fff", borderRadius: 20, padding: 32, boxShadow: "0 8px 32px rgba(45,122,82,0.12)", border: "1px solid rgba(45,122,82,0.1)" }}>
             {/* Domain tag */}
             {(() => { const dom = DOMAINS.find(d => QUESTIONS[d.id]?.some(q => q.id === currentQ.id)); return dom ? (
               <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${dom.color}12`, border: `1px solid ${dom.color}33`, borderRadius: 20, padding: "3px 12px", marginBottom: 16, fontSize: 12, color: dom.color, fontWeight: 600 }}>

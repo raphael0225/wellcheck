@@ -1,76 +1,37 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
-// ── LANGUAGE CONFIG ────────────────────────────────────────────────────────────
-const LANGUAGES = [
-  { code: "en", label: "English",  flag: "🇺🇸" },
-  { code: "es", label: "Español",  flag: "🇪🇸" },
-  { code: "tl", label: "Tagalog",  flag: "🇵🇭" },
-];
+// ── TRANSLATION ──────────────────────────────────────────────────────────────
+// Cache persists for the session. translate() fires only when language changes.
+const _cache = {};
+const _inflight = new Set();
 
-const LANG_NAMES = { en: "English", es: "Spanish", tl: "Tagalog/Filipino" };
-
-// ── TRANSLATION HOOK ───────────────────────────────────────────────────────────
-function useTranslation(lang) {
-  const cacheRef = useRef({});
-  const inFlight = useRef(new Set());
-  const [tick, setTick] = useState(0);
-  const langRef = useRef(lang);
-  useEffect(() => { langRef.current = lang; }, [lang]);
-
-  const translate = useCallback(async (strings) => {
-    const currentLang = langRef.current;
-    if (currentLang === "en") return;
-
-    const missing = strings.filter(s => {
-      if (!s) return false;
-      const key = `${currentLang}|${s}`;
-      return !(key in cacheRef.current) && !inFlight.current.has(key);
+async function fetchTranslations(strings, targetLang, onDone) {
+  const needed = strings.filter(s => s && !_cache[`${targetLang}|${s}`] && !_inflight.has(`${targetLang}|${s}`));
+  if (!needed.length) { onDone(); return; }
+  needed.forEach(s => _inflight.add(`${targetLang}|${s}`));
+  try {
+    const prompt = `Translate this JSON string array from English to Tagalog/Filipino.\nKeep emojis unchanged. Keep organization names/URLs unchanged.\nReturn ONLY a valid JSON array, same order, no markdown.\n\n${JSON.stringify(needed)}`;
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 2000,
+        messages: [{ role: "user", content: prompt }],
+      }),
     });
-    if (missing.length === 0) return;
-
-    missing.forEach(s => inFlight.current.add(`${currentLang}|${s}`));
-    console.log("[BodySmart] Translating to", currentLang, ":", missing);
-
-    try {
-      const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[currentLang]}.
-Keep emojis exactly as-is. Keep proper nouns (organization names, URLs) untouched.
-Return ONLY a valid JSON array of translated strings in the same order. No explanation, no markdown fences.
-
-${JSON.stringify(missing)}`;
-
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.map(b => b.text || "").join("") || "[]";
-      const clean = text.replace(/```json|```/g, "").trim();
-      const translated = JSON.parse(clean);
-      missing.forEach((s, i) => {
-        cacheRef.current[`${currentLang}|${s}`] = translated[i] ?? s;
-        inFlight.current.delete(`${currentLang}|${s}`);
-      });
-    } catch (err) {
-      console.error("Translation error:", err);
-      missing.forEach(s => {
-        cacheRef.current[`${currentLang}|${s}`] = s;
-        inFlight.current.delete(`${currentLang}|${s}`);
-      });
-    }
-    setTick(n => n + 1);
-  }, []);
-
-  const t = (s) => {
-    if (!s || lang === "en") return s;
-    return cacheRef.current[`${lang}|${s}`] || s;
-  };
-
-  return { t, translate };
+    const data = await res.json();
+    const raw = data.content?.map(b => b.text || "").join("") || "[]";
+    const translated = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    needed.forEach((s, i) => {
+      _cache[`${targetLang}|${s}`] = translated[i] ?? s;
+      _inflight.delete(`${targetLang}|${s}`);
+    });
+  } catch(e) {
+    console.error("Translation failed:", e);
+    needed.forEach(s => { _cache[`${targetLang}|${s}`] = s; _inflight.delete(`${targetLang}|${s}`); });
+  }
+  onDone();
 }
 
 // ── BRAND COLORS ──────────────────────────────────────────────────────────────
@@ -380,66 +341,55 @@ export default function LabHealthLiteracy() {
   const [stars, setStars]     = useState({});
   const [bounce, setBounce]   = useState(false);
   const [showAbout, setShowAbout] = useState(false);
-  const [lang, setLang]       = useState("en");
-  const { t, translate }      = useTranslation(lang);
+  const [lang, setLang]     = useState("en");
+  const [, setTick]         = useState(0); // forces re-render after translations land
+  const rerender            = () => setTick(n => n + 1);
+
+  // t() — returns cached translation or original string
+  const t = (s) => (lang === "en" || !s) ? s : (_cache[`${lang}|${s}`] || s);
+
+  // When language changes, pre-translate all visible home screen strings
+  useEffect(() => {
+    if (lang === "en") return;
+    const strings = [
+      "{t("Pick a Topic to Explore!")}", "{t("Tap a picture to start learning 👇")}",
+      "{t("⭐ Your Stars ⭐")}", "About This App & Our Sources",
+      "Learn Fun Facts!", "Take the Quiz!", "Your best score:",
+      "Next Fact! →", "I'm Ready! ✅", "Next Question! →", "See My Stars! ⭐",
+      "🏠 Home", "Try the Quiz Again!", "Read the Facts Again", "Pick Another Topic!",
+      "Question", "of", "Amazing! You got it right!", "The answer is:",
+      "PERFECT!", "Great Job!", "Good Try!",
+      "You got", "out of", "right!",
+      t("You are a Health Explorer Champion! 🦸"),
+      t("Keep practicing — you're getting smarter every day! 💪"),
+      t("You know so much about your health! Keep learning!"),
+      "Fun Fact!", "Evidence-based source:",
+      "Back to Topics", "About BodySmart Kids",
+      ...TOPICS.map(tp => tp.label),
+      ...TOPICS.map(tp => tp.desc),
+    ];
+    fetchTranslations(strings, lang, rerender);
+  }, [lang]);
+
+  // Translate current fact when it changes
+  useEffect(() => {
+    if (lang === "en" || !activeFacts[factIdx]) return;
+    const f = activeFacts[factIdx];
+    fetchTranslations([f.title, f.text, f.fun], lang, rerender);
+  }, [lang, factIdx, activeFacts]);
+
+  // Translate current quiz question when it changes
+  useEffect(() => {
+    if (lang === "en" || !activeQuiz[quizIdx]) return;
+    const q = activeQuiz[quizIdx];
+    fetchTranslations([q.q, ...q.options], lang, rerender);
+  }, [lang, quizIdx, activeQuiz]);
 
   useEffect(() => {
     setBounce(true);
     const timer = setTimeout(() => setBounce(false), 600);
     return () => clearTimeout(timer);
   }, [screen]);
-
-  // Translate home screen topic labels/descs when language changes
-  useEffect(() => {
-    if (lang === "en") return;
-    const homeStrings = [
-      "Pick a Topic to Explore!",
-      "Tap a picture to start learning 👇",
-      "⭐ Your Stars ⭐",
-      "📚 About This App & Our Sources",
-      "Learn Fun Facts!",
-      "Take the Quiz!",
-      "Your best score:",
-      "Next Fact! →",
-      "I'm Ready! ✅",
-      "Next Question! →",
-      "See My Stars! ⭐",
-      "🏠 Home",
-      "🔄 Try the Quiz Again!",
-      "📖 Read the Facts Again",
-      "🏠 Pick Another Topic!",
-      "Question", "of",
-      "Amazing! You got it right!",
-      "The answer is:",
-      "PERFECT!", "Great Job!", "Good Try!",
-      "You got", "out of", "right!",
-      "You are a Health Explorer Champion! 🦸",
-      "Keep practicing — you're getting smarter every day! 💪",
-      "You know so much about your health! Keep learning!",
-      "🤩 Fun Fact!",
-      "📚 Evidence-based source:",
-      "📖 Learn Fun Facts!",
-      "🎯 Take the Quiz!",
-      "About BodySmart Kids",
-      ...TOPICS.map(tp => tp.label),
-      ...TOPICS.map(tp => tp.desc),
-    ];
-    translate(homeStrings);
-  }, [lang, translate]);
-
-  // Translate current fact when it changes
-  useEffect(() => {
-    if (lang === "en" || !activeFacts[factIdx]) return;
-    const f = activeFacts[factIdx];
-    translate([f.title, f.text, f.fun]);
-  }, [lang, factIdx, activeFacts, translate]);
-
-  // Translate current quiz question when it changes
-  useEffect(() => {
-    if (lang === "en" || !activeQuiz[quizIdx]) return;
-    const q = activeQuiz[quizIdx];
-    translate([q.q, ...q.options]);
-  }, [lang, quizIdx, activeQuiz, translate]);
 
   const goHome = () => { setScreen("home"); setTopic(null); setFactIdx(0); setQuizIdx(0); setScore(0); setSelected(null); setShowAns(false); };
   const pickTopic = (t) => {
@@ -506,25 +456,27 @@ export default function LabHealthLiteracy() {
           )}
         </div>
         {/* App title bar */}
-        <div style={{ background:C.blue, padding:"10px 20px", borderRadius:"0 0 20px 20px", textAlign:"center", position:"relative" }}>
+        <div style={{ background:C.blue, padding:"10px 20px", borderRadius:"0 0 20px 20px", textAlign:"center" }}>
           <div style={{ color:C.white, fontWeight:900, fontSize:18, letterSpacing:1 }}>
             🌟 BodySmart Kids 🌟
           </div>
           <div style={{ color:C.yellow, fontSize:12, fontWeight:700 }}>Explore · Learn · Stay Healthy!</div>
-          {/* Language selector */}
-          <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:8 }}>
-            {LANGUAGES.map(l => (
-              <button key={l.code} onClick={() => setLang(l.code)} className="btn"
-                style={{
-                  padding:"4px 10px", borderRadius:20, border:`2px solid ${lang===l.code ? C.yellow : "rgba(255,255,255,0.3)"}`,
-                  background: lang===l.code ? C.yellow : "rgba(255,255,255,0.1)",
-                  color: lang===l.code ? C.blue : C.white,
-                  fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"Georgia, serif",
-                  transition:"all 0.2s",
-                }}>
-                {l.flag} {l.label}
-              </button>
-            ))}
+          <div style={{ marginTop:8, display:"flex", justifyContent:"center" }}>
+            <select
+              value={lang}
+              onChange={e => setLang(e.target.value)}
+              style={{
+                background:"rgba(255,255,255,0.15)", color:C.white,
+                border:`2px solid ${C.yellow}`, borderRadius:20,
+                padding:"4px 12px", fontSize:13, fontWeight:700,
+                cursor:"pointer", fontFamily:"Georgia, serif",
+                outline:"none", appearance:"none",
+                WebkitAppearance:"none",
+              }}
+            >
+              <option value="en" style={{ color:"#333", background:"#fff" }}>🇺🇸 English</option>
+              <option value="tl" style={{ color:"#333", background:"#fff" }}>🇵🇭 Tagalog</option>
+            </select>
           </div>
         </div>
       </div>
@@ -534,8 +486,8 @@ export default function LabHealthLiteracy() {
         <div className="pop" style={{ width:"100%", maxWidth:600 }}>
           <div style={{ textAlign:"center", marginBottom:20 }}>
             <div className="float" style={{ fontSize:64, lineHeight:1, marginBottom:8 }}>🌈</div>
-            <div style={{ fontSize:22, fontWeight:900, color:C.blue, marginBottom:4 }}>{t("Pick a Topic to Explore!")}</div>
-            <div style={{ fontSize:14, color:"#666" }}>{t("Tap a picture to start learning 👇")}</div>
+            <div style={{ fontSize:22, fontWeight:900, color:C.blue, marginBottom:4 }}>Pick a Topic to Explore!</div>
+            <div style={{ fontSize:14, color:"#666" }}>Tap a picture to start learning 👇</div>
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
@@ -556,7 +508,7 @@ export default function LabHealthLiteracy() {
 
           {Object.keys(stars).length > 0 && (
             <div style={{ marginTop:20, background:C.yellow, borderRadius:16, padding:"14px 20px", textAlign:"center", border:`3px solid ${C.orange}` }}>
-              <div style={{ fontSize:16, fontWeight:900, color:C.blue }}>{t("⭐ Your Stars ⭐")}</div>
+              <div style={{ fontSize:16, fontWeight:900, color:C.blue }}>⭐ Your Stars ⭐</div>
               <div style={{ display:"flex", justifyContent:"center", gap:16, marginTop:8, flexWrap:"wrap" }}>
                 {TOPICS.filter(tp=>stars[tp.id]).map(tp=>(
                   <div key={tp.id} style={{ textAlign:"center" }}>
@@ -589,18 +541,18 @@ export default function LabHealthLiteracy() {
             </div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-              {TOPICS.map(t => (
-                <div key={t.id} style={{ background:t.bg, borderRadius:14, padding:"14px 16px", border:`2px solid ${t.color}33` }}>
+              {TOPICS.map(tp2 => (
+                <div key={tp2.id} style={{ background:tp2.bg, borderRadius:14, padding:"14px 16px", border:`2px solid ${tp2.color}33` }}>
                   <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
-                    <span style={{ fontSize:22 }}>{t.emoji}</span>
-                    <span style={{ fontSize:15, fontWeight:900, color:t.color }}>{t.label}</span>
+                    <span style={{ fontSize:22 }}>{tp2.emoji}</span>
+                    <span style={{ fontSize:15, fontWeight:900, color:tp2.color }}>{t(tp2.label)}</span>
                   </div>
                   <div style={{ fontSize:12, color:"#444", lineHeight:1.6 }}>
-                    <strong>📖 Sources:</strong> {t.source}
+                    <strong>📖 Sources:</strong> {tp2.source}
                   </div>
-                  {t.sourceUrl && (
+                  {tp2.sourceUrl && (
                     <div style={{ fontSize:11, color:"#888", marginTop:4 }}>
-                      🌐 Learn more: <span style={{ color:C.blue }}>{t.sourceUrl}</span>
+                      🌐 Learn more: <span style={{ color:C.blue }}>{tp2.sourceUrl}</span>
                     </div>
                   )}
                 </div>
@@ -740,9 +692,7 @@ export default function LabHealthLiteracy() {
 
             {showAns && (
               <div className="pop" style={{ marginTop:16, padding:"12px 16px", borderRadius:14, background:selected===activeQuiz[quizIdx].answer?"#d4edda":"#fff3cd", border:`2px solid ${selected===activeQuiz[quizIdx].answer?"#28a745":"#ffc107"}`, textAlign:"center", fontSize:16, fontWeight:700, color:"#333" }}>
-                {selected===activeQuiz[quizIdx].answer
-                  ? t("🎉 Amazing! You got it right!")
-                  : `💡 ${t("The answer is:")} ${t(activeQuiz[quizIdx].options[activeQuiz[quizIdx].answer])}`}
+                {selected===activeQuiz[quizIdx].answer ? t("🎉 Amazing! You got it right!") : `💡 ${t("The answer is:")} ${t(activeQuiz[quizIdx].options[activeQuiz[quizIdx].answer])}`}
               </div>
             )}
           </div>
@@ -771,10 +721,10 @@ export default function LabHealthLiteracy() {
             <Stars count={stars[topic.id]||1} />
             <div style={{ marginTop:16, fontSize:15, color:"#444", lineHeight:1.6 }}>
               {finalScore()===activeQuiz.length
-                ? t("You are a Health Explorer Champion! 🦸")
+                ? "You are a Health Explorer Champion! 🦸"
                 : finalScore()>=2
-                ? t("You know so much about your health! Keep learning!")
-                : t("Keep practicing — you're getting smarter every day! 💪")}
+                ? "You know so much about your health! Keep learning!"
+                : "Keep practicing — you're getting smarter every day! 💪"}
             </div>
           </div>
 

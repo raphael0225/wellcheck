@@ -10,23 +10,23 @@ const LANGUAGES = [
 const LANG_NAMES = { en: "English", es: "Spanish", tl: "Tagalog/Filipino" };
 
 // ── TRANSLATION HOOK ───────────────────────────────────────────────────────────
-// Translates an array of strings dynamically via Claude API.
-// Results are cached in a ref so each unique string is only fetched once.
+// Uses state-based cache so React re-renders properly when translations arrive.
 function useTranslation(lang) {
-  const cache = useRef({}); // { "en|es|Hello": "Hola", ... }
-  const [, forceUpdate] = useState(0);
+  const [cache, setCache] = useState({});
+  const inFlight = useRef(new Set());
+
+  useEffect(() => { inFlight.current = new Set(); }, [lang]);
 
   const translate = useCallback(async (strings) => {
-    if (lang === "en") return; // English is source language — no fetch needed
+    if (lang === "en") return;
     const missing = strings.filter(s => {
       if (!s) return false;
       const key = `${lang}|${s}`;
-      return !(key in cache.current);
+      return !(key in cache) && !inFlight.current.has(key);
     });
     if (missing.length === 0) return;
 
-    // Mark as in-progress to avoid duplicate fetches
-    missing.forEach(s => { cache.current[`${lang}|${s}`] = null; });
+    missing.forEach(s => inFlight.current.add(`${lang}|${s}`));
 
     try {
       const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[lang]}.
@@ -35,7 +35,7 @@ Return ONLY a valid JSON array of translated strings in the same order. No expla
 
 ${JSON.stringify(missing)}`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -48,23 +48,28 @@ ${JSON.stringify(missing)}`;
       const text = data.content?.map(b => b.text || "").join("") || "[]";
       const clean = text.replace(/```json|```/g, "").trim();
       const translated = JSON.parse(clean);
+      const newEntries = {};
       missing.forEach((s, i) => {
-        cache.current[`${lang}|${s}`] = translated[i] ?? s;
+        const key = `${lang}|${s}`;
+        newEntries[key] = translated[i] ?? s;
+        inFlight.current.delete(key);
       });
-      forceUpdate(n => n + 1);
+      setCache(prev => ({ ...prev, ...newEntries }));
     } catch {
-      // On error, fall back to original strings
-      missing.forEach(s => { cache.current[`${lang}|${s}`] = s; });
-      forceUpdate(n => n + 1);
+      const newEntries = {};
+      missing.forEach(s => {
+        const key = `${lang}|${s}`;
+        newEntries[key] = s;
+        inFlight.current.delete(key);
+      });
+      setCache(prev => ({ ...prev, ...newEntries }));
     }
-  }, [lang]);
+  }, [lang, cache]);
 
-  // t() returns translated string if cached, original while loading
   const t = useCallback((s) => {
     if (!s || lang === "en") return s;
-    const key = `${lang}|${s}`;
-    return cache.current[key] || s;
-  }, [lang, cache.current]);  // eslint-disable-line
+    return cache[`${lang}|${s}`] || s;
+  }, [lang, cache]);
 
   return { t, translate };
 }

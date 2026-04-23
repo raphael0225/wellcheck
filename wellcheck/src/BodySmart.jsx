@@ -29,6 +29,7 @@ function useTranslation(lang) {
     if (missing.length === 0) return;
 
     missing.forEach(s => inFlight.current.add(`${currentLang}|${s}`));
+    console.log("[BodySmart] Translating to", currentLang, ":", missing);
 
     try {
       const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[currentLang]}.
@@ -41,7 +42,7 @@ ${JSON.stringify(missing)}`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-haiku-4-5-20251001",
           max_tokens: 1000,
           messages: [{ role: "user", content: prompt }],
         }),

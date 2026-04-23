@@ -352,17 +352,17 @@ export default function LabHealthLiteracy() {
   useEffect(() => {
     if (lang === "en") return;
     const strings = [
-      "{t("Pick a Topic to Explore!")}", "{t("Tap a picture to start learning 👇")}",
-      "{t("⭐ Your Stars ⭐")}", "About This App & Our Sources",
+      "Pick a Topic to Explore!", "Tap a picture to start learning 👇",
+      "⭐ Your Stars ⭐", "About This App & Our Sources",
       "Learn Fun Facts!", "Take the Quiz!", "Your best score:",
       "Next Fact! →", "I'm Ready! ✅", "Next Question! →", "See My Stars! ⭐",
-      "🏠 Home", "Try the Quiz Again!", "Read the Facts Again", "Pick Another Topic!",
-      "Question", "of", "Amazing! You got it right!", "The answer is:",
+      "Home", "Try the Quiz Again!", "Read the Facts Again", "Pick Another Topic!",
+      "Question", "of", "🎉 Amazing! You got it right!", "The answer is:",
       "PERFECT!", "Great Job!", "Good Try!",
       "You got", "out of", "right!",
-      t("You are a Health Explorer Champion! 🦸"),
-      t("Keep practicing — you're getting smarter every day! 💪"),
-      t("You know so much about your health! Keep learning!"),
+      "You are a Health Explorer Champion! 🦸",
+      "Keep practicing — you're getting smarter every day! 💪",
+      "You know so much about your health! Keep learning!",
       "Fun Fact!", "Evidence-based source:",
       "Back to Topics", "About BodySmart Kids",
       ...TOPICS.map(tp => tp.label),
@@ -392,10 +392,10 @@ export default function LabHealthLiteracy() {
   }, [screen]);
 
   const goHome = () => { setScreen("home"); setTopic(null); setFactIdx(0); setQuizIdx(0); setScore(0); setSelected(null); setShowAns(false); };
-  const pickTopic = (t) => {
-    setTopic(t);
-    setActiveFacts(pick(t.facts, 10));
-    setActiveQuiz(pick(t.quiz, 5));
+  const pickTopic = (tp) => {
+    setTopic(tp);
+    setActiveFacts(pick(tp.facts, 10));
+    setActiveQuiz(pick(tp.quiz, 5));
     setScreen("topic");
   };
   const startLearn = () => { setFactIdx(0); setActiveFacts(pick(topic.facts, 10)); setScreen("learn"); };
@@ -721,10 +721,10 @@ export default function LabHealthLiteracy() {
             <Stars count={stars[topic.id]||1} />
             <div style={{ marginTop:16, fontSize:15, color:"#444", lineHeight:1.6 }}>
               {finalScore()===activeQuiz.length
-                ? "You are a Health Explorer Champion! 🦸"
+                ? t("You are a Health Explorer Champion! 🦸")
                 : finalScore()>=2
-                ? "You know so much about your health! Keep learning!"
-                : "Keep practicing — you're getting smarter every day! 💪"}
+                ? t("You know so much about your health! Keep learning!")
+                : t("Keep practicing — you're getting smarter every day! 💪")}
             </div>
           </div>
 

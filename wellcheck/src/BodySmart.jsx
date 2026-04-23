@@ -1,4 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+
+// ── LANGUAGE CONFIG ────────────────────────────────────────────────────────────
+const LANGUAGES = [
+  { code: "en", label: "English",  flag: "🇺🇸" },
+  { code: "es", label: "Español",  flag: "🇪🇸" },
+  { code: "tl", label: "Tagalog",  flag: "🇵🇭" },
+];
+
+const LANG_NAMES = { en: "English", es: "Spanish", tl: "Tagalog/Filipino" };
+
+// ── TRANSLATION HOOK ───────────────────────────────────────────────────────────
+// Translates an array of strings dynamically via Claude API.
+// Results are cached in a ref so each unique string is only fetched once.
+function useTranslation(lang) {
+  const cache = useRef({}); // { "en|es|Hello": "Hola", ... }
+  const [, forceUpdate] = useState(0);
+
+  const translate = useCallback(async (strings) => {
+    if (lang === "en") return; // English is source language — no fetch needed
+    const missing = strings.filter(s => {
+      if (!s) return false;
+      const key = `${lang}|${s}`;
+      return !(key in cache.current);
+    });
+    if (missing.length === 0) return;
+
+    // Mark as in-progress to avoid duplicate fetches
+    missing.forEach(s => { cache.current[`${lang}|${s}`] = null; });
+
+    try {
+      const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[lang]}.
+Keep emojis exactly as-is. Keep proper nouns (organization names, URLs) untouched.
+Return ONLY a valid JSON array of translated strings in the same order. No explanation, no markdown fences.
+
+${JSON.stringify(missing)}`;
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      const data = await res.json();
+      const text = data.content?.map(b => b.text || "").join("") || "[]";
+      const clean = text.replace(/```json|```/g, "").trim();
+      const translated = JSON.parse(clean);
+      missing.forEach((s, i) => {
+        cache.current[`${lang}|${s}`] = translated[i] ?? s;
+      });
+      forceUpdate(n => n + 1);
+    } catch {
+      // On error, fall back to original strings
+      missing.forEach(s => { cache.current[`${lang}|${s}`] = s; });
+      forceUpdate(n => n + 1);
+    }
+  }, [lang]);
+
+  // t() returns translated string if cached, original while loading
+  const t = useCallback((s) => {
+    if (!s || lang === "en") return s;
+    const key = `${lang}|${s}`;
+    return cache.current[key] || s;
+  }, [lang, cache.current]);  // eslint-disable-line
+
+  return { t, translate };
+}
 
 // ── BRAND COLORS ──────────────────────────────────────────────────────────────
 const C = {
@@ -307,12 +376,66 @@ export default function LabHealthLiteracy() {
   const [stars, setStars]     = useState({});
   const [bounce, setBounce]   = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [lang, setLang]       = useState("en");
+  const { t, translate }      = useTranslation(lang);
 
   useEffect(() => {
     setBounce(true);
-    const t = setTimeout(() => setBounce(false), 600);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setBounce(false), 600);
+    return () => clearTimeout(timer);
   }, [screen]);
+
+  // Translate home screen topic labels/descs when language changes
+  useEffect(() => {
+    if (lang === "en") return;
+    const homeStrings = [
+      "Pick a Topic to Explore!",
+      "Tap a picture to start learning 👇",
+      "⭐ Your Stars ⭐",
+      "📚 About This App & Our Sources",
+      "Learn Fun Facts!",
+      "Take the Quiz!",
+      "Your best score:",
+      "Next Fact! →",
+      "I'm Ready! ✅",
+      "Next Question! →",
+      "See My Stars! ⭐",
+      "🏠 Home",
+      "🔄 Try the Quiz Again!",
+      "📖 Read the Facts Again",
+      "🏠 Pick Another Topic!",
+      "Question", "of",
+      "Amazing! You got it right!",
+      "The answer is:",
+      "PERFECT!", "Great Job!", "Good Try!",
+      "You got", "out of", "right!",
+      "You are a Health Explorer Champion! 🦸",
+      "Keep practicing — you're getting smarter every day! 💪",
+      "You know so much about your health! Keep learning!",
+      "🤩 Fun Fact!",
+      "📚 Evidence-based source:",
+      "📖 Learn Fun Facts!",
+      "🎯 Take the Quiz!",
+      "About BodySmart Kids",
+      ...TOPICS.map(tp => tp.label),
+      ...TOPICS.map(tp => tp.desc),
+    ];
+    translate(homeStrings);
+  }, [lang, translate]);
+
+  // Translate current fact when it changes
+  useEffect(() => {
+    if (lang === "en" || !activeFacts[factIdx]) return;
+    const f = activeFacts[factIdx];
+    translate([f.title, f.text, f.fun]);
+  }, [lang, factIdx, activeFacts, translate]);
+
+  // Translate current quiz question when it changes
+  useEffect(() => {
+    if (lang === "en" || !activeQuiz[quizIdx]) return;
+    const q = activeQuiz[quizIdx];
+    translate([q.q, ...q.options]);
+  }, [lang, quizIdx, activeQuiz, translate]);
 
   const goHome = () => { setScreen("home"); setTopic(null); setFactIdx(0); setQuizIdx(0); setScore(0); setSelected(null); setShowAns(false); };
   const pickTopic = (t) => {
@@ -379,11 +502,26 @@ export default function LabHealthLiteracy() {
           )}
         </div>
         {/* App title bar */}
-        <div style={{ background:C.blue, padding:"10px 20px", borderRadius:"0 0 20px 20px", textAlign:"center" }}>
+        <div style={{ background:C.blue, padding:"10px 20px", borderRadius:"0 0 20px 20px", textAlign:"center", position:"relative" }}>
           <div style={{ color:C.white, fontWeight:900, fontSize:18, letterSpacing:1 }}>
             🌟 BodySmart Kids 🌟
           </div>
           <div style={{ color:C.yellow, fontSize:12, fontWeight:700 }}>Explore · Learn · Stay Healthy!</div>
+          {/* Language selector */}
+          <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:8 }}>
+            {LANGUAGES.map(l => (
+              <button key={l.code} onClick={() => setLang(l.code)} className="btn"
+                style={{
+                  padding:"4px 10px", borderRadius:20, border:`2px solid ${lang===l.code ? C.yellow : "rgba(255,255,255,0.3)"}`,
+                  background: lang===l.code ? C.yellow : "rgba(255,255,255,0.1)",
+                  color: lang===l.code ? C.blue : C.white,
+                  fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"Georgia, serif",
+                  transition:"all 0.2s",
+                }}>
+                {l.flag} {l.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -392,34 +530,34 @@ export default function LabHealthLiteracy() {
         <div className="pop" style={{ width:"100%", maxWidth:600 }}>
           <div style={{ textAlign:"center", marginBottom:20 }}>
             <div className="float" style={{ fontSize:64, lineHeight:1, marginBottom:8 }}>🌈</div>
-            <div style={{ fontSize:22, fontWeight:900, color:C.blue, marginBottom:4 }}>Pick a Topic to Explore!</div>
-            <div style={{ fontSize:14, color:"#666" }}>Tap a picture to start learning 👇</div>
+            <div style={{ fontSize:22, fontWeight:900, color:C.blue, marginBottom:4 }}>{t("Pick a Topic to Explore!")}</div>
+            <div style={{ fontSize:14, color:"#666" }}>{t("Tap a picture to start learning 👇")}</div>
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-            {TOPICS.map((t, i) => (
-              <div key={t.id} className="btn pop" onClick={() => pickTopic(t)}
-                style={{ background:t.bg, borderRadius:20, padding:"20px 14px", textAlign:"center", border:`4px solid ${t.color}`, boxShadow:`0 6px 16px ${t.color}44`, animationDelay:`${i*0.1}s`, position:"relative" }}>
-                {stars[t.id] && (
+            {TOPICS.map((tp, i) => (
+              <div key={tp.id} className="btn pop" onClick={() => pickTopic(tp)}
+                style={{ background:tp.bg, borderRadius:20, padding:"20px 14px", textAlign:"center", border:`4px solid ${tp.color}`, boxShadow:`0 6px 16px ${tp.color}44`, animationDelay:`${i*0.1}s`, position:"relative" }}>
+                {stars[tp.id] && (
                   <div style={{ position:"absolute", top:8, right:8, fontSize:14 }}>
-                    {"⭐".repeat(stars[t.id])}
+                    {"⭐".repeat(stars[tp.id])}
                   </div>
                 )}
-                <div style={{ fontSize:52, marginBottom:8, lineHeight:1 }}>{t.emoji}</div>
-                <div style={{ fontSize:16, fontWeight:900, color:t.color, marginBottom:4 }}>{t.label}</div>
-                <div style={{ fontSize:12, color:"#555", lineHeight:1.4 }}>{t.desc}</div>
+                <div style={{ fontSize:52, marginBottom:8, lineHeight:1 }}>{tp.emoji}</div>
+                <div style={{ fontSize:16, fontWeight:900, color:tp.color, marginBottom:4 }}>{t(tp.label)}</div>
+                <div style={{ fontSize:12, color:"#555", lineHeight:1.4 }}>{t(tp.desc)}</div>
               </div>
             ))}
           </div>
 
           {Object.keys(stars).length > 0 && (
             <div style={{ marginTop:20, background:C.yellow, borderRadius:16, padding:"14px 20px", textAlign:"center", border:`3px solid ${C.orange}` }}>
-              <div style={{ fontSize:16, fontWeight:900, color:C.blue }}>⭐ Your Stars ⭐</div>
+              <div style={{ fontSize:16, fontWeight:900, color:C.blue }}>{t("⭐ Your Stars ⭐")}</div>
               <div style={{ display:"flex", justifyContent:"center", gap:16, marginTop:8, flexWrap:"wrap" }}>
-                {TOPICS.filter(t=>stars[t.id]).map(t=>(
-                  <div key={t.id} style={{ textAlign:"center" }}>
-                    <div style={{ fontSize:20 }}>{t.emoji}</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:t.color }}>{"⭐".repeat(stars[t.id])}</div>
+                {TOPICS.filter(tp=>stars[tp.id]).map(tp=>(
+                  <div key={tp.id} style={{ textAlign:"center" }}>
+                    <div style={{ fontSize:20 }}>{tp.emoji}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:tp.color }}>{"⭐".repeat(stars[tp.id])}</div>
                   </div>
                 ))}
               </div>
@@ -429,7 +567,7 @@ export default function LabHealthLiteracy() {
           {/* About button */}
           <button onClick={() => setShowAbout(true)} className="btn"
             style={{ width:"100%", marginTop:16, padding:"12px", borderRadius:14, border:`2px solid ${C.blue}`, background:"transparent", color:C.blue, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"Georgia, serif" }}>
-            📚 About This App & Our Sources
+            📚 {t("About This App & Our Sources")}
           </button>
         </div>
       )}
@@ -440,7 +578,7 @@ export default function LabHealthLiteracy() {
           <div style={{ background:"#fff", borderRadius:20, padding:28, boxShadow:"0 8px 32px rgba(0,0,0,0.1)", border:`3px solid ${C.blue}`, marginBottom:14 }}>
             <div style={{ textAlign:"center", marginBottom:20 }}>
               <div style={{ fontSize:40, marginBottom:8 }}>📚</div>
-              <h2 style={{ margin:0, fontSize:20, color:C.blue, fontWeight:900 }}>About BodySmart Kids</h2>
+              <h2 style={{ margin:0, fontSize:20, color:C.blue, fontWeight:900 }}>{t("About BodySmart Kids")}</h2>
               <p style={{ margin:"8px 0 0", fontSize:13, color:"#555", lineHeight:1.6 }}>
                 All health facts in this app are based on evidence from trusted, peer-reviewed medical and public health organizations. Content is reviewed and aligned with national pediatric health guidelines.
               </p>
@@ -487,7 +625,7 @@ export default function LabHealthLiteracy() {
 
           <button onClick={() => setShowAbout(false)} className="btn"
             style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", background:C.blue, color:"#fff", fontSize:16, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 4px 14px ${C.blue}55` }}>
-            🏠 Back to Topics
+            🏠 {t("Back to Topics")}
           </button>
         </div>
       )}
@@ -503,16 +641,16 @@ export default function LabHealthLiteracy() {
 
           <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
             <button onClick={startLearn} className="btn" style={{ background:C.blue, border:"none", borderRadius:16, padding:"18px 24px", color:C.white, fontSize:18, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${C.blue}55`, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-              📖 Learn Fun Facts!
+              📖 {t("Learn Fun Facts!")}
             </button>
             <button onClick={startQuiz} className="btn" style={{ background:C.orange, border:"none", borderRadius:16, padding:"18px 24px", color:C.white, fontSize:18, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${C.orange}55`, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-              🎯 Take the Quiz!
+              🎯 {t("Take the Quiz!")}
             </button>
           </div>
 
           {stars[topic.id] && (
             <div style={{ marginTop:16, textAlign:"center" }}>
-              <div style={{ fontSize:14, color:"#666", marginBottom:4 }}>Your best score:</div>
+              <div style={{ fontSize:14, color:"#666", marginBottom:4 }}>{t("Your best score:")}</div>
               <Stars count={stars[topic.id]} />
             </div>
           )}
@@ -532,23 +670,23 @@ export default function LabHealthLiteracy() {
           {/* Fact card */}
           <div key={factIdx} className="pop" style={{ background:topic.bg, borderRadius:24, padding:28, border:`4px solid ${topic.color}`, boxShadow:`0 8px 24px ${topic.color}33`, marginBottom:16 }}>
             <div style={{ fontSize:60, textAlign:"center", marginBottom:12, lineHeight:1 }}>{activeFacts[factIdx].emoji}</div>
-            <div style={{ fontSize:22, fontWeight:900, color:topic.color, textAlign:"center", marginBottom:12 }}>{activeFacts[factIdx].title}</div>
-            <div style={{ fontSize:16, color:"#333", lineHeight:1.7, textAlign:"center", marginBottom:16 }}>{activeFacts[factIdx].text}</div>
+            <div style={{ fontSize:22, fontWeight:900, color:topic.color, textAlign:"center", marginBottom:12 }}>{t(activeFacts[factIdx].title)}</div>
+            <div style={{ fontSize:16, color:"#333", lineHeight:1.7, textAlign:"center", marginBottom:16 }}>{t(activeFacts[factIdx].text)}</div>
             <div style={{ background:C.yellow, borderRadius:14, padding:"12px 16px", border:`2px solid ${C.orange}` }}>
-              <div style={{ fontSize:13, fontWeight:900, color:C.orange, marginBottom:4 }}>🤩 Fun Fact!</div>
-              <div style={{ fontSize:14, color:"#333", lineHeight:1.6 }}>{activeFacts[factIdx].fun}</div>
+              <div style={{ fontSize:13, fontWeight:900, color:C.orange, marginBottom:4 }}>🤩 {t("Fun Fact!")}</div>
+              <div style={{ fontSize:14, color:"#333", lineHeight:1.6 }}>{t(activeFacts[factIdx].fun)}</div>
             </div>
             {topic.source && (
               <div style={{ marginTop:10, padding:"8px 12px", background:"#f7f7f7", borderRadius:10, border:"1px solid #e0e0e0" }}>
                 <div style={{ fontSize:10, color:"#888", lineHeight:1.5 }}>
-                  📚 <strong>Evidence-based source:</strong> {topic.source}
+                  📚 <strong>{t("Evidence-based source:")}</strong> {topic.source}
                 </div>
               </div>
             )}
           </div>
 
           <button onClick={nextFact} className="btn" style={{ width:"100%", background:topic.color, border:"none", borderRadius:16, padding:"18px", color:C.white, fontSize:18, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${topic.color}55` }}>
-            {factIdx < activeFacts.length - 1 ? "Next Fact! →" : "I'm Ready! ✅"}
+            {factIdx < activeFacts.length - 1 ? t("Next Fact! →") : t("I'm Ready! ✅")}
           </button>
         </div>
       )}
@@ -571,10 +709,10 @@ export default function LabHealthLiteracy() {
           {/* Question */}
           <div key={quizIdx} className="pop" style={{ background:topic.bg, borderRadius:24, padding:"24px 20px", border:`4px solid ${topic.color}`, boxShadow:`0 8px 24px ${topic.color}33`, marginBottom:16 }}>
             <div style={{ fontSize:14, fontWeight:700, color:topic.color, marginBottom:12, textAlign:"center" }}>
-              Question {quizIdx+1} of {activeQuiz.length}
+              {t("Question")} {quizIdx+1} {t("of")} {activeQuiz.length}
             </div>
             <div style={{ fontSize:20, fontWeight:900, color:"#222", textAlign:"center", lineHeight:1.4, marginBottom:20 }}>
-              {activeQuiz[quizIdx].q}
+              {t(activeQuiz[quizIdx].q)}
             </div>
             <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               {activeQuiz[quizIdx].options.map((opt,i) => {
@@ -590,7 +728,7 @@ export default function LabHealthLiteracy() {
                     <span style={{ width:30, height:30, borderRadius:"50%", background:showAns&&isCorrect?"#28a745":showAns&&isSelected?"#dc3545":topic.color, color:C.white, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, fontSize:14, flexShrink:0 }}>
                       {showAns && isCorrect ? "✓" : showAns && isSelected ? "✗" : String.fromCharCode(65+i)}
                     </span>
-                    {opt}
+                    {t(opt)}
                   </div>
                 );
               })}
@@ -598,14 +736,16 @@ export default function LabHealthLiteracy() {
 
             {showAns && (
               <div className="pop" style={{ marginTop:16, padding:"12px 16px", borderRadius:14, background:selected===activeQuiz[quizIdx].answer?"#d4edda":"#fff3cd", border:`2px solid ${selected===activeQuiz[quizIdx].answer?"#28a745":"#ffc107"}`, textAlign:"center", fontSize:16, fontWeight:700, color:"#333" }}>
-                {selected===activeQuiz[quizIdx].answer ? "🎉 Amazing! You got it right!" : `💡 The answer is: ${activeQuiz[quizIdx].options[activeQuiz[quizIdx].answer]}`}
+                {selected===activeQuiz[quizIdx].answer
+                  ? t("🎉 Amazing! You got it right!")
+                  : `💡 ${t("The answer is:")} ${t(activeQuiz[quizIdx].options[activeQuiz[quizIdx].answer])}`}
               </div>
             )}
           </div>
 
           {showAns && (
             <button onClick={nextQuiz} className="btn" style={{ width:"100%", background:topic.color, border:"none", borderRadius:16, padding:"18px", color:C.white, fontSize:18, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${topic.color}55` }}>
-              {quizIdx < activeQuiz.length-1 ? "Next Question! →" : "See My Stars! ⭐"}
+              {quizIdx < activeQuiz.length-1 ? t("Next Question! →") : t("See My Stars! ⭐")}
             </button>
           )}
         </div>
@@ -619,30 +759,30 @@ export default function LabHealthLiteracy() {
               {finalScore()===activeQuiz.length?"🏆":finalScore()>=2?"🌟":"😊"}
             </div>
             <div style={{ fontSize:26, fontWeight:900, color:C.blue, marginBottom:8 }}>
-              {finalScore()===activeQuiz.length?"PERFECT!":finalScore()>=2?"Great Job!":"Good Try!"}
+              {finalScore()===activeQuiz.length?t("PERFECT!"):finalScore()>=2?t("Great Job!"):t("Good Try!")}
             </div>
             <div style={{ fontSize:18, color:"#333", marginBottom:16, fontWeight:700 }}>
-              You got {finalScore()} out of {activeQuiz.length} right!
+              {t("You got")} {finalScore()} {t("out of")} {activeQuiz.length} {t("right!")}
             </div>
             <Stars count={stars[topic.id]||1} />
             <div style={{ marginTop:16, fontSize:15, color:"#444", lineHeight:1.6 }}>
               {finalScore()===activeQuiz.length
-                ? "You are a Health Explorer Champion! 🦸"
+                ? t("You are a Health Explorer Champion! 🦸")
                 : finalScore()>=2
-                ? "You know so much about your health! Keep learning!"
-                : "Keep practicing — you're getting smarter every day! 💪"}
+                ? t("You know so much about your health! Keep learning!")
+                : t("Keep practicing — you're getting smarter every day! 💪")}
             </div>
           </div>
 
           <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
             <button onClick={startQuiz} className="btn" style={{ background:C.blue, border:"none", borderRadius:16, padding:"16px", color:C.white, fontSize:17, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${C.blue}55` }}>
-              🔄 Try the Quiz Again!
+              🔄 {t("Try the Quiz Again!")}
             </button>
             <button onClick={startLearn} className="btn" style={{ background:topic.color, border:"none", borderRadius:16, padding:"16px", color:C.white, fontSize:17, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${topic.color}55` }}>
-              📖 Read the Facts Again
+              📖 {t("Read the Facts Again")}
             </button>
             <button onClick={goHome} className="btn" style={{ background:C.orange, border:"none", borderRadius:16, padding:"16px", color:C.white, fontSize:17, fontWeight:900, cursor:"pointer", fontFamily:"Georgia, serif", boxShadow:`0 6px 16px ${C.orange}55` }}>
-              🏠 Pick Another Topic!
+              🏠 {t("Pick Another Topic!")}
             </button>
           </div>
         </div>

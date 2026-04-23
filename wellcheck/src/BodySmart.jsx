@@ -10,26 +10,28 @@ const LANGUAGES = [
 const LANG_NAMES = { en: "English", es: "Spanish", tl: "Tagalog/Filipino" };
 
 // ── TRANSLATION HOOK ───────────────────────────────────────────────────────────
-// Uses state-based cache so React re-renders properly when translations arrive.
 function useTranslation(lang) {
-  const [cache, setCache] = useState({});
+  const cacheRef = useRef({});
   const inFlight = useRef(new Set());
-
-  useEffect(() => { inFlight.current = new Set(); }, [lang]);
+  const [tick, setTick] = useState(0);
+  const langRef = useRef(lang);
+  useEffect(() => { langRef.current = lang; }, [lang]);
 
   const translate = useCallback(async (strings) => {
-    if (lang === "en") return;
+    const currentLang = langRef.current;
+    if (currentLang === "en") return;
+
     const missing = strings.filter(s => {
       if (!s) return false;
-      const key = `${lang}|${s}`;
-      return !(key in cache) && !inFlight.current.has(key);
+      const key = `${currentLang}|${s}`;
+      return !(key in cacheRef.current) && !inFlight.current.has(key);
     });
     if (missing.length === 0) return;
 
-    missing.forEach(s => inFlight.current.add(`${lang}|${s}`));
+    missing.forEach(s => inFlight.current.add(`${currentLang}|${s}`));
 
     try {
-      const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[lang]}.
+      const prompt = `Translate the following JSON array of strings from English to ${LANG_NAMES[currentLang]}.
 Keep emojis exactly as-is. Keep proper nouns (organization names, URLs) untouched.
 Return ONLY a valid JSON array of translated strings in the same order. No explanation, no markdown fences.
 
@@ -48,28 +50,24 @@ ${JSON.stringify(missing)}`;
       const text = data.content?.map(b => b.text || "").join("") || "[]";
       const clean = text.replace(/```json|```/g, "").trim();
       const translated = JSON.parse(clean);
-      const newEntries = {};
       missing.forEach((s, i) => {
-        const key = `${lang}|${s}`;
-        newEntries[key] = translated[i] ?? s;
-        inFlight.current.delete(key);
+        cacheRef.current[`${currentLang}|${s}`] = translated[i] ?? s;
+        inFlight.current.delete(`${currentLang}|${s}`);
       });
-      setCache(prev => ({ ...prev, ...newEntries }));
-    } catch {
-      const newEntries = {};
+    } catch (err) {
+      console.error("Translation error:", err);
       missing.forEach(s => {
-        const key = `${lang}|${s}`;
-        newEntries[key] = s;
-        inFlight.current.delete(key);
+        cacheRef.current[`${currentLang}|${s}`] = s;
+        inFlight.current.delete(`${currentLang}|${s}`);
       });
-      setCache(prev => ({ ...prev, ...newEntries }));
     }
-  }, [lang, cache]);
+    setTick(n => n + 1);
+  }, []);
 
-  const t = useCallback((s) => {
+  const t = (s) => {
     if (!s || lang === "en") return s;
-    return cache[`${lang}|${s}`] || s;
-  }, [lang, cache]);
+    return cacheRef.current[`${lang}|${s}`] || s;
+  };
 
   return { t, translate };
 }

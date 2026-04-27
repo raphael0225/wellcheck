@@ -10,6 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/bodysmart" element={<BodySmart />} />
+        <Route path="/mindcheck" element={<MindCheck />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
